@@ -11,6 +11,7 @@ def ShaderNodeBsdfPrincipled(new_node, old_node):
 
     return new_node
 
+
 def ShaderNodeTexImage(new_node, old_node):
 
     new_node.image = old_node.image
@@ -57,23 +58,23 @@ def ShaderNodeNormalMap(new_node, old_node):
 
 def ShaderNodeMixRGB(new_node, old_node):
 
-    if old_node.bl_idname == "ShaderNodeOctMixTex":
+    if old_node.bl_idname == "OctaneMixTexture":
         new_node.blend_type = 'MIX'
 
-    if old_node.bl_idname == "ShaderNodeOctAddTex":
+    if old_node.bl_idname == "OctaneAddTexture":
         new_node.blend_type = "ADD"
 
-    if old_node.bl_idname == "ShaderNodeOctMultiplyTex":
+    if old_node.bl_idname == "OctaneMultiplyTexture":
         new_node.blend_type = "MULTIPLY"
 
-    if old_node.bl_idname == "ShaderNodeOctSubtractTex":
+    if old_node.bl_idname == "OctaneSubtractTexture":
         new_node.blend_type = "SUBTRACT"
 
     return new_node
 
 # OCTANE NODES
 
-def ShaderNodeOctUniversalMat(new_node, old_node):
+def OctaneUniversalMaterial(new_node, old_node):
 
     # Turn albedo black when detect transmission change
     if not new_node.inputs['Transmission'].default_value == (0, 0, 0, 1):
@@ -87,7 +88,7 @@ def ShaderNodeOctImageTex(new_node, old_node):
     return new_node
 
 
-def ShaderNodeOctNullMat(new_node, old_node):
+def OctaneNullMaterial(new_node, old_node):
 
     if old_node.bl_idname == "ShaderNodeBsdfTransparent":
         new_node.inputs['Opacity'].default_value = 0
@@ -95,7 +96,7 @@ def ShaderNodeOctNullMat(new_node, old_node):
     return new_node
 
 
-def ShaderNodeOctMixTex(new_node, old_node):
+def OctaneMixTexture(new_node, old_node):
 
     def replace_mix_operation(mix_node, to_operation):
 
@@ -127,64 +128,23 @@ def ShaderNodeOctMixTex(new_node, old_node):
         return new_op_node
 
     if old_node.blend_type == 'MULTIPLY':
-        return replace_mix_operation(new_node, 'ShaderNodeOctMultiplyTex')
+        return replace_mix_operation(new_node, 'OctaneMultiplyTexture')
 
     if old_node.blend_type == 'ADD':
-        return replace_mix_operation(new_node, 'ShaderNodeOctAddTex')
+        return replace_mix_operation(new_node, 'OctaneAddTexture')
 
     if old_node.blend_type == 'SUBTRACT':
-        return replace_mix_operation(new_node, 'ShaderNodeOctSubtractTex')
+        return replace_mix_operation(new_node, 'OctaneSubtractTexture')
 
 
-def ShaderNodeOctAddTex(new_node, old_node):
-
-    def replace_math_operation(math_node, to_operation):
-
-        node_tree = math_node.id_data
-
-        new_op_node = node_tree.nodes.new(to_operation)
-        new_op_node.location = math_node.location
-
-        new_op_node.inputs[0].default_value = get_correct_value(
-            new_op_node.inputs[0], old_node.inputs[0].default_value)
-        new_op_node.inputs[1].default_value = get_correct_value(
-            new_op_node.inputs[0], old_node.inputs[1].default_value)
-
-        link = node_tree.links.new
-
-        if math_node.inputs[0].links:
-            link(math_node.inputs[0].links[0].from_socket,
-                 new_op_node.inputs[0])
-        if math_node.inputs[1].links:
-            link(math_node.inputs[1].links[0].from_socket,
-                 new_op_node.inputs[1])
-
-        if math_node.outputs[0].links:
-            for i in math_node.outputs[0].links:
-                link(i.to_socket, new_op_node.outputs[0])
-
-        node_tree.nodes.remove(math_node)
-
-        return new_op_node
-
-    if old_node.operation == 'MULTIPLY':
-        return replace_math_operation(new_node, 'ShaderNodeOctMultiplyTex')
-
-    if old_node.operation == 'ADD':
-        return replace_math_operation(new_node, 'ShaderNodeOctAddTex')
-
-    if old_node.operation == 'SUBTRACT':
-        return replace_math_operation(new_node, 'ShaderNodeOctSubtractTex')
-
-
-def ShaderNodeOctColorVertexTex(new_node, old_node):
+def OctaneColorVertexAttribute(new_node, old_node):
 
     new_node.inputs[0].default_value = old_node.layer_name
 
     return new_node
 
 
-def ShaderNodeOctColorCorrectTex(new_node, old_node):
+def OctaneColorCorrection(new_node, old_node):
 
     new_node.inputs["Brightness"].default_value += 1
     new_node.inputs["Contrast"].default_value += 0.001

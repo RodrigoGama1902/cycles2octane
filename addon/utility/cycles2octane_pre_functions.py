@@ -10,7 +10,7 @@ def ShaderNodeBump(old_node):
     return old_node
 
 
-def ShaderNodeOctUniversalMat(old_node):
+def OctaneUniversalMaterial(old_node):
 
     # Change bump input to normal input before converting
 
