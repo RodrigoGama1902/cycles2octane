@@ -11,7 +11,6 @@ def ShaderNodeBsdfPrincipled(new_node, old_node):
 
     return new_node
 
-
 def ShaderNodeTexImage(new_node, old_node):
 
     new_node.image = old_node.image
@@ -19,19 +18,20 @@ def ShaderNodeTexImage(new_node, old_node):
     return new_node
 
 
-'''
-def ShaderNodeOutputMaterial(new_node, old_node):
-    
-    props = bpy.context.scene.cycles2octane
-    
-    if props.convert_to == "0":
-        new_node.target = "ALL"
-        
-    if props.convert_to == "1":
-        new_node.target = "octane"
-    
+def ShaderNodeMath(new_node, old_node):
+
+    def update_node_operation(cycles_operaton: str, octane_operation: str) -> None:
+
+        if old_node.inputs['Operation'].default_value == octane_operation:
+            new_node.operation = cycles_operaton
+
+    update_node_operation("ADD", "Add")
+    update_node_operation("DIVIDE", "Divide")
+    update_node_operation("POWER", "Exponential [a^b]")
+    update_node_operation("MULTIPLY", "Multiply")
+    update_node_operation("SUBTRACT", "Subtract")
+
     return new_node
-'''
 
 
 def ShaderNodeNormalMap(new_node, old_node):
@@ -72,7 +72,6 @@ def ShaderNodeMixRGB(new_node, old_node):
     return new_node
 
 # OCTANE NODES
-
 
 def ShaderNodeOctUniversalMat(new_node, old_node):
 
@@ -193,8 +192,24 @@ def ShaderNodeOctColorCorrectTex(new_node, old_node):
 
     return new_node
 
-# NULL NODES GROUP
 
+def OctaneBinaryMathOperation(new_node: bpy.types.Node, old_node: bpy.types.Node) -> bpy.types.Nodes:
+
+    def update_node_operation(cycles_operaton: str, octane_operation: str) -> None:
+
+        if old_node.operation == cycles_operaton:
+            new_node.inputs['Operation'].default_value = octane_operation
+
+    update_node_operation("ADD", "Add")
+    update_node_operation("DIVIDE", "Divide")
+    update_node_operation("POWER", "Exponential [a^b]")
+    update_node_operation("MULTIPLY", "Multiply")
+    update_node_operation("SUBTRACT", "Subtract")
+
+    return new_node
+
+
+# NULL NODES GROUP
 
 def NULL_NODE_ShaderNodeBump(new_node, old_node):
 

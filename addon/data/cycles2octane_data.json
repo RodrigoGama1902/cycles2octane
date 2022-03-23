@@ -128,11 +128,7 @@
       "0": "0"
     },
 
-    "octane_node": [
-      "ShaderNodeOctAddTex",
-      "ShaderNodeOctMultiplyTex",
-      "ShaderNodeOctSubtractTex"
-    ]
+    "octane_node": "OctaneBinaryMathOperation"
   },
 
   "ShaderNodeBsdfTransparent": {
