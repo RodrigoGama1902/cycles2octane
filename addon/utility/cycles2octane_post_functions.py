@@ -1,6 +1,7 @@
 import bpy
 
 from .functions import get_correct_value
+from .node_functions import replace_node
 
 # Functions that will run after the replaced node were created
 
@@ -21,16 +22,31 @@ def ShaderNodeTexImage(new_node, old_node):
 
 def ShaderNodeMath(new_node, old_node):
 
-    def update_node_operation(cycles_operaton: str, octane_operation: str) -> None:
+    # Binary Operations
 
-        if old_node.inputs['Operation'].default_value == octane_operation:
-            new_node.operation = cycles_operaton
+    if old_node.inputs['Operation'].default_value == "Add":
+        new_node.operation = "ADD"
+    if old_node.inputs['Operation'].default_value == "Divide":
+        new_node.operation = "DIVIDE"
+    if old_node.inputs['Operation'].default_value == "Exponential [a^b]":
+        new_node.operation = "POWER"
+    if old_node.inputs['Operation'].default_value == "Multiply":
+        new_node.operation = "MULTIPLY"
+    if old_node.inputs['Operation'].default_value == "Subtract":
+        new_node.operation = "SUBTRACT"
 
-    update_node_operation("ADD", "Add")
-    update_node_operation("DIVIDE", "Divide")
-    update_node_operation("POWER", "Exponential [a^b]")
-    update_node_operation("MULTIPLY", "Multiply")
-    update_node_operation("SUBTRACT", "Subtract")
+    # Unary Operations
+
+    if old_node.inputs['Operation'].default_value == "Sine":
+        new_node.operation = "SINE"
+    if old_node.inputs['Operation'].default_value == "Square root":
+        new_node.operation = "SQRT"
+    if old_node.inputs['Operation'].default_value == "Inverse square root":
+        new_node.operation = "INVERSE_SQRT"
+    if old_node.inputs['Operation'].default_value == "Absolute value":
+        new_node.operation = "ABSOLUTE"
+    if old_node.inputs['Operation'].default_value == "Exponential [2^x]":
+        new_node.operation = "EXPONENT"
 
     return new_node
 
@@ -74,10 +90,11 @@ def ShaderNodeMixRGB(new_node, old_node):
 
 # OCTANE NODES
 
+
 def OctaneUniversalMaterial(new_node, old_node):
 
     # Turn albedo black when detect transmission change
-    if not new_node.inputs['Transmission'].default_value == (0, 0, 0, 1):
+    if not new_node.inputs['Transmission'].links:
         new_node.inputs['Albedo color'].default_value = (0, 0, 0, 1)
 
 
@@ -155,21 +172,56 @@ def OctaneColorCorrection(new_node, old_node):
 
 def OctaneBinaryMathOperation(new_node: bpy.types.Node, old_node: bpy.types.Node) -> bpy.types.Nodes:
 
-    def update_node_operation(cycles_operaton: str, octane_operation: str) -> None:
+    cycles_binary_math_operation = [
+        "ADD", "SUBTRACT", "MULTIPLY", "DIVIDE", "POWER"]
 
-        if old_node.operation == cycles_operaton:
-            new_node.inputs['Operation'].default_value = octane_operation
+    cycles_unary_math_operation = [
+        "SINE", "SQRT", "INVERSE_SQRT", "ABSOLUTE", "EXPONENT"]
 
-    update_node_operation("ADD", "Add")
-    update_node_operation("DIVIDE", "Divide")
-    update_node_operation("POWER", "Exponential [a^b]")
-    update_node_operation("MULTIPLY", "Multiply")
-    update_node_operation("SUBTRACT", "Subtract")
+    if old_node.operation in cycles_binary_math_operation:
+
+        if old_node.operation == "ADD":
+            new_node.inputs['Operation'].default_value = "Add"
+
+        if old_node.operation == "DIVIDE":
+            new_node.inputs['Operation'].default_value = "Divide"
+
+        if old_node.operation == "POWER":
+            new_node.inputs['Operation'].default_value = "Exponential [a^b]"
+
+        if old_node.operation == "MULTIPLY":
+            new_node.inputs['Operation'].default_value = "Multiply"
+
+        if old_node.operation == "SUBTRACT":
+            new_node.inputs['Operation'].default_value = "Subtract"
+
+    if old_node.operation in cycles_unary_math_operation:
+
+        unary_node = replace_node(
+            new_node, "OctaneUnaryMathOperation", {"0": 0}, {"0": 0})
+
+        if old_node.operation == "SINE":
+            unary_node.inputs[1].default_value = "Sine"
+
+        if old_node.operation == "SQRT":
+            unary_node.inputs[1].default_value = "Square root"
+
+        if old_node.operation == "INVERSE_SQRT":
+            unary_node.inputs[1].default_value = "Inverse square root"
+
+        if old_node.operation == "ABSOLUTE":
+            unary_node.inputs[1].default_value = "Absolute value"
+
+        if old_node.operation == "EXPONENT":
+            unary_node.inputs[1].default_value = "Exponential [2^x]"
+
+        new_node.id_data.nodes.remove(new_node)
+        new_node = unary_node
 
     return new_node
 
-
 # NULL NODES GROUP
+
 
 def NULL_NODE_ShaderNodeBump(new_node, old_node):
 
