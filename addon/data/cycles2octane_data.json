@@ -101,13 +101,13 @@
 
   "ShaderNodeMixRGB": {
     "inputs": {
-      "Fac": "Amount",
-      "Color1": "First texture",
-      "Color2": "Second texture"
+      "0": "0",
+      "1": "1",
+      "2": "2"
     },
 
     "outputs": {
-      "Color": "Texture out"
+      "0": "0"
     },
 
     "octane_node": [

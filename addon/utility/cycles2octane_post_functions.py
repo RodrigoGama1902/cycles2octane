@@ -1,7 +1,7 @@
 import bpy
 
 from .functions import get_correct_value
-from .node_functions import replace_node
+from .node_functions import replace_node, move_node_link_to_socket
 
 # Functions that will run after the replaced node were created
 
@@ -80,11 +80,20 @@ def ShaderNodeMixRGB(new_node, old_node):
     if old_node.bl_idname == "OctaneAddTexture":
         new_node.blend_type = "ADD"
 
+        move_node_link_to_socket(new_node.inputs[1], 2)
+        move_node_link_to_socket(new_node.inputs[0], 1)
+
     if old_node.bl_idname == "OctaneMultiplyTexture":
         new_node.blend_type = "MULTIPLY"
 
+        move_node_link_to_socket(new_node.inputs[1], 2)
+        move_node_link_to_socket(new_node.inputs[0], 1)
+
     if old_node.bl_idname == "OctaneSubtractTexture":
         new_node.blend_type = "SUBTRACT"
+
+        move_node_link_to_socket(new_node.inputs[1], 2)
+        move_node_link_to_socket(new_node.inputs[0], 1)
 
     return new_node
 
@@ -94,8 +103,8 @@ def ShaderNodeMixRGB(new_node, old_node):
 def OctaneUniversalMaterial(new_node, old_node):
 
     # Turn albedo black when detect transmission change
-    if not new_node.inputs['Transmission'].links:
-        new_node.inputs['Albedo color'].default_value = (0, 0, 0, 1)
+    if new_node.inputs['Transmission'].links:
+        new_node.inputs['Albedo'].default_value = (0, 0, 0)
 
 
 def ShaderNodeOctImageTex(new_node, old_node):
@@ -115,43 +124,25 @@ def OctaneNullMaterial(new_node, old_node):
 
 def OctaneMixTexture(new_node, old_node):
 
-    def replace_mix_operation(mix_node, to_operation):
+    if old_node.blend_type == 'MIX':
+        return new_node
 
-        node_tree = mix_node.id_data
+    else:
+        if old_node.blend_type == 'MULTIPLY':
+            replacement_node = replace_node(new_node, "OctaneMultiplyTexture", {
+                "1": 0, "2": 1}, {"0": 0})
 
-        new_op_node = node_tree.nodes.new(to_operation)
-        new_op_node.location = mix_node.location
+        if old_node.blend_type == 'ADD':
+            replacement_node = replace_node(new_node, "OctaneAddTexture", {
+                "1": 0, "2": 1}, {"0": 0})
 
-        new_op_node.inputs[0].default_value = get_correct_value(
-            new_op_node.inputs[0], old_node.inputs[1].default_value)
-        new_op_node.inputs[1].default_value = get_correct_value(
-            new_op_node.inputs[0], old_node.inputs[2].default_value)
+        if old_node.blend_type == 'SUBTRACT':
+            replacement_node = replace_node(new_node, "OctaneSubtractTexture", {
+                "1": 0, "2": 1}, {"0": 0})
 
-        link = node_tree.links.new
+        new_node.id_data.nodes.remove(new_node)
 
-        if mix_node.inputs[1].links:
-            link(mix_node.inputs[1].links[0].from_socket,
-                 new_op_node.inputs[0])
-        if mix_node.inputs[2].links:
-            link(mix_node.inputs[2].links[0].from_socket,
-                 new_op_node.inputs[1])
-
-        if mix_node.outputs[0].links:
-            for i in mix_node.outputs[0].links:
-                link(i.to_socket, new_op_node.outputs[0])
-
-        node_tree.nodes.remove(mix_node)
-
-        return new_op_node
-
-    if old_node.blend_type == 'MULTIPLY':
-        return replace_mix_operation(new_node, 'OctaneMultiplyTexture')
-
-    if old_node.blend_type == 'ADD':
-        return replace_mix_operation(new_node, 'OctaneAddTexture')
-
-    if old_node.blend_type == 'SUBTRACT':
-        return replace_mix_operation(new_node, 'OctaneSubtractTexture')
+        return replacement_node
 
 
 def OctaneColorVertexAttribute(new_node, old_node):
@@ -238,11 +229,6 @@ def NULL_NODE_ShaderNodeBump(new_node, old_node):
                         link = node_tree.links.new
                         link(new_node.outputs["Bump"],
                              i.to_node.inputs["Bump"])
-
-    # if not new_node.inputs["Normal"].links:
-    #    if new_node.outputs["Normal"].links:
-    #        for i in new_node.outputs["Normal"].links:
-    #            node_tree.links.remove(i)
 
     return new_node
 
