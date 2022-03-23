@@ -1,246 +1,257 @@
-{   
-
-    "ShaderNodeBsdfTranslucent": {
-        "inputs": {
-            "Color":"Albedo color",
-            "Normal":"Normal" 
-        },
-        
-        "outputs": {
-            "BSDF":"Material out"
-        },
-
-        "octane_node":"OctaneUniversalMaterial"
+{
+  "ShaderNodeBsdfTranslucent": {
+    "inputs": {
+      "Color": "Albedo color",
+      "Normal": "Normal"
     },
 
-    "ShaderNodeBsdfPrincipled": {
-        "inputs": {
-            "Base Color":"Albedo",
-            "Metallic":"Metallic",
-            "Specular":"Specular",
-            "Roughness":"Roughness",
-            "Anisotropic":"Anisotropy",
-            "Anisotropic Rotation":"Rotation",
-            "Sheen":"Sheen",
-            "Sheen Tint":"Sheen roughness",
-            "Clearcoat":"Coating",
-            "Clearcoat Roughness":"Coating roughness",
-            "IOR":"Dielectric IOR",
-            "Transmission":"Transmission",
-            "Emission Strength":"Emission",
-            "Alpha":"Opacity",
-            "Normal":"Normal",
-            "Clearcoat Normal":"Coating normal"
-    
-        },
-        
-        "outputs": {
-            "BSDF":"Material out"
-        },
-
-        "octane_node":"OctaneUniversalMaterial"
+    "outputs": {
+      "BSDF": "Material out"
     },
 
-    "ShaderNodeTexImage": {
-        "inputs": {
-            "Vector":"Transform" 
-        },
-        
-        "outputs": {
-            "Color":"OutTex"
-        },
+    "octane_node": "OctaneUniversalMaterial"
+  },
 
-        "octane_node":"ShaderNodeOctImageTex"
+  "ShaderNodeBsdfPrincipled": {
+    "inputs": {
+      "Base Color": "Albedo",
+      "Metallic": "Metallic",
+      "Specular": "Specular",
+      "Roughness": "Roughness",
+      "Anisotropic": "Anisotropy",
+      "Anisotropic Rotation": "Rotation",
+      "Sheen": "Sheen",
+      "Sheen Tint": "Sheen roughness",
+      "Clearcoat": "Coating",
+      "Clearcoat Roughness": "Coating roughness",
+      "IOR": "Dielectric IOR",
+      "Transmission": "Transmission",
+      "Emission Strength": "Emission",
+      "Alpha": "Opacity",
+      "Normal": "Normal",
+      "Clearcoat Normal": "Coating normal"
     },
 
-    "ShaderNodeOutputMaterial": {
-        "inputs": {
-            "Surface":"Surface",
-            "Volume":"Volume",
-            "Displacement":"Octane Geometry"
-        },
-        
-        "outputs": {
-        },
-
-        "octane_node":"ShaderNodeOutputMaterial"
+    "outputs": {
+      "BSDF": "Material out"
     },
 
-    "ShaderNodeInvert": {
-        "inputs": {
-            "Color":"Texture"
-        },
-        
-        "outputs": {
-            "Color":"OutTex"
-        },
+    "octane_node": "OctaneUniversalMaterial"
+  },
 
-        "octane_node":"ShaderNodeOctInvertTex"
+  "ShaderNodeTexImage": {
+    "inputs": {
+      "Vector": "Transform"
     },
 
-    "ShaderNodeMapping": {
-        "inputs": {
-            "Location":"Translation",
-            "Rotation":"Rotation",
-            "Scale":"Scale"
-        },
-        
-        "outputs": {
-            "Vector":"OutTransform"
-        },
-
-        "octane_node":"ShaderNodeOctFullTransform"
+    "outputs": {
+      "Color": "OutTex"
     },
 
-    "ShaderNodeVertexColor": {
+    "octane_node": "ShaderNodeOctImageTex"
+  },
 
-        "inputs": {
-        },
-        
-        "outputs": {
-            "Color":"OutTex"
-        },
-
-        "octane_node":"ShaderNodeOctColorVertexTex"
+  "ShaderNodeOutputMaterial": {
+    "inputs": {
+      "Surface": "Surface",
+      "Volume": "Volume",
+      "Displacement": "Geometry"
     },
 
-    "ShaderNodeMixRGB":{
-        "inputs": {
-            "Fac":"Amount",
-            "Color1":"Texture1",
-            "Color2":"Texture2"
-        },
-        
-        "outputs": {
-            "Color":"OutTex"
-        },
+    "outputs": {},
 
-        "octane_node":["ShaderNodeOctMixTex","ShaderNodeOctAddTex","ShaderNodeOctMultiplyTex","ShaderNodeOctSubtractTex"]
+    "octane_node": "OctaneEditorMaterialOutputNode"
+  },
+
+  "ShaderNodeInvert": {
+    "inputs": {
+      "Color": "Texture"
     },
 
-    "ShaderNodeMath":{
-        "inputs": {
-            "0":"0",
-            "1":"1"
-        },
-        
-        "outputs": {
-            "0":"0"
-        },
-
-        "octane_node":["ShaderNodeOctAddTex","ShaderNodeOctMultiplyTex","ShaderNodeOctSubtractTex"]
+    "outputs": {
+      "Color": "Texture out"
     },
 
-    "ShaderNodeBsdfTransparent":{
-        "inputs": {
-            
-        },
-        
-        "outputs": {
-            "BSDF":"Material out"
-        },
+    "octane_node": "OctaneInvertTexture"
+  },
 
-        "octane_node":"ShaderNodeOctNullMat"
+  "ShaderNodeMapping": {
+    "inputs": {
+      "Location": "Translation",
+      "Rotation": "Rotation",
+      "Scale": "Scale"
     },
 
-    "ShaderNodeMixShader":{
-        "inputs": {
-            "0":"0",
-            "1":"2",
-            "2":"1"
-        },
-        
-        "outputs": {
-            "0":"0"
-        },
-
-        "octane_node":"ShaderNodeOctMixMat"
+    "outputs": {
+      "Vector": "Transform out"
     },
 
-    "ShaderNodeAddShader":{
-        "inputs": {
-            "0":"1",
-            "1":"2"
-        },
-        
-        "outputs": {
-            "0":"0"
-        },
+    "octane_node": "Octane3DTransformation"
+  },
 
-        "octane_node":"ShaderNodeOctMixMat"
+  "ShaderNodeVertexColor": {
+    "inputs": {},
+
+    "outputs": {
+      "Color": "Texture out"
     },
 
-    "ShaderNodeBump":{
-        "inputs": {
-            "Strength":"Strength",
-            "Distance":"Distance",
-            "Height":"Height",
-            "Normal":"Normal"
-        },
-        
-        "outputs": {
-            "Normal":"Normal"
-        },
+    "octane_node": "OctaneColorVertexAttribute"
+  },
 
-        "group_inputs":{"Strength":"NodeSocketFloatFactor","Distance":"NodeSocketFloatFactor","Height":"NodeSocketShader","Normal":"NodeSocketShader"},
-        "group_outputs":{"Bump":"NodeSocketShader","Normal":"NodeSocketShader"},
- 
-        "null_links":{
-            "Height":"Bump",
-            "Normal":"Normal"
-        },
-
-        "octane_node":"None"
+  "ShaderNodeMixRGB": {
+    "inputs": {
+      "Fac": "Amount",
+      "Color1": "Texture1",
+      "Color2": "Texture2"
     },
 
-    "ShaderNodeNormalMap":{
-        "inputs": {
-            "Strength":"Strength",
-            "Color":"Color"
-        },
-        
-        "outputs": {
-            "Normal":"Normal"
-        },
-
-        "group_inputs":{"Strength":"NodeSocketFloatFactor","Color":"NodeSocketShader"},
-        "group_outputs":{"Normal":"NodeSocketShader"},
-
-        "null_links":{
-            "Color":"Normal"
-        },
-
-        "octane_node":"None"
+    "outputs": {
+      "Color": "OutTex"
     },
 
-    "ShaderNodeHueSaturation": {
-        "inputs": {
-            "Color":"Texture",
-            "Hue":"Hue",
-            "Saturation":"Saturation",
-            "Value":"Gain"
-        },
-        
-        "outputs": {
-            "Color":"OutTex"
-        },
+    "octane_node": [
+      "ShaderNodeOctMixTex",
+      "ShaderNodeOctAddTex",
+      "ShaderNodeOctMultiplyTex",
+      "ShaderNodeOctSubtractTex"
+    ]
+  },
 
-        "octane_node":"ShaderNodeOctColorCorrectTex"
+  "ShaderNodeMath": {
+    "inputs": {
+      "0": "0",
+      "1": "1"
     },
 
-    "ShaderNodeBrightContrast": {
-        "inputs": {
-            "Color":"Texture",
-            "Bright":"Brightness",
-            "Contrast":"Contrast"
-        },
-        
-        "outputs": {
-            "Color":"OutTex"
-        },
+    "outputs": {
+      "0": "0"
+    },
 
-        "octane_node":"ShaderNodeOctColorCorrectTex"
-    }
+    "octane_node": [
+      "ShaderNodeOctAddTex",
+      "ShaderNodeOctMultiplyTex",
+      "ShaderNodeOctSubtractTex"
+    ]
+  },
 
+  "ShaderNodeBsdfTransparent": {
+    "inputs": {},
+
+    "outputs": {
+      "BSDF": "Material out"
+    },
+
+    "octane_node": "OctaneNullMaterial"
+  },
+
+  "ShaderNodeMixShader": {
+    "inputs": {
+      "0": "0",
+      "1": "1",
+      "2": "2"
+    },
+
+    "outputs": {
+      "0": "0"
+    },
+
+    "octane_node": "OctaneMixMaterial"
+  },
+
+  "ShaderNodeAddShader": {
+    "inputs": {
+      "0": "1",
+      "1": "2"
+    },
+
+    "outputs": {
+      "0": "0"
+    },
+
+    "octane_node": "OctaneMixMaterial"
+  },
+
+  "ShaderNodeBump": {
+    "inputs": {
+      "Strength": "Strength",
+      "Distance": "Distance",
+      "Height": "Height",
+      "Normal": "Normal"
+    },
+
+    "outputs": {
+      "Normal": "Normal"
+    },
+
+    "group_inputs": {
+      "Strength": "NodeSocketFloatFactor",
+      "Distance": "NodeSocketFloatFactor",
+      "Height": "NodeSocketShader",
+      "Normal": "NodeSocketShader"
+    },
+    "group_outputs": {
+      "Bump": "NodeSocketShader",
+      "Normal": "NodeSocketShader"
+    },
+
+    "null_links": {
+      "Height": "Bump",
+      "Normal": "Normal"
+    },
+
+    "octane_node": "None"
+  },
+
+  "ShaderNodeNormalMap": {
+    "inputs": {
+      "Strength": "Strength",
+      "Color": "Color"
+    },
+
+    "outputs": {
+      "Normal": "Normal"
+    },
+
+    "group_inputs": {
+      "Strength": "NodeSocketFloatFactor",
+      "Color": "NodeSocketShader"
+    },
+    "group_outputs": { "Normal": "NodeSocketShader" },
+
+    "null_links": {
+      "Color": "Normal"
+    },
+
+    "octane_node": "None"
+  },
+
+  "ShaderNodeHueSaturation": {
+    "inputs": {
+      "Color": "Input",
+      "Hue": "Hue",
+      "Saturation": "Saturation",
+      "Value": "Gain"
+    },
+
+    "outputs": {
+      "Color": "Texture out"
+    },
+
+    "octane_node": "OctaneColorCorrection"
+  },
+
+  "ShaderNodeBrightContrast": {
+    "inputs": {
+      "Color": "Input",
+      "Bright": "Brightness",
+      "Contrast": "Contrast"
+    },
+
+    "outputs": {
+      "Color": "Texture out"
+    },
+
+    "octane_node": "OctaneColorCorrection"
+  }
 }
-

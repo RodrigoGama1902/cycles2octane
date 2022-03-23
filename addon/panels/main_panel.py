@@ -41,4 +41,6 @@ class COC_PT_NodeConverter(COC_PT_ObjPanel):
         
         row.scale_y = 1.3        
         row.operator("coc.convert_nodes",icon="NODETREE")
+        row = layout.row()
+        row.operator("coc.octanedatacheck")
         
