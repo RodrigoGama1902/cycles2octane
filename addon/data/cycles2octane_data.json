@@ -7,38 +7,38 @@
         },
         
         "outputs": {
-            "BSDF":"OutMat"
+            "BSDF":"Material out"
         },
 
-        "octane_node":"ShaderNodeOctUniversalMat"
+        "octane_node":"OctaneUniversalMaterial"
     },
 
     "ShaderNodeBsdfPrincipled": {
         "inputs": {
-            "Base Color":"Albedo color",
+            "Base Color":"Albedo",
             "Metallic":"Metallic",
             "Specular":"Specular",
             "Roughness":"Roughness",
             "Anisotropic":"Anisotropy",
             "Anisotropic Rotation":"Rotation",
             "Sheen":"Sheen",
-            "Sheen Tint":"Sheen Roughness",
+            "Sheen Tint":"Sheen roughness",
             "Clearcoat":"Coating",
-            "Clearcoat Roughness":"Coating Roughness",
+            "Clearcoat Roughness":"Coating roughness",
             "IOR":"Dielectric IOR",
             "Transmission":"Transmission",
             "Emission Strength":"Emission",
             "Alpha":"Opacity",
             "Normal":"Normal",
-            "Clearcoat Normal":"Coating Normal"
+            "Clearcoat Normal":"Coating normal"
     
         },
         
         "outputs": {
-            "BSDF":"OutMat"
+            "BSDF":"Material out"
         },
 
-        "octane_node":"ShaderNodeOctUniversalMat"
+        "octane_node":"OctaneUniversalMaterial"
     },
 
     "ShaderNodeTexImage": {
@@ -137,7 +137,7 @@
         },
         
         "outputs": {
-            "BSDF":"OutMat"
+            "BSDF":"Material out"
         },
 
         "octane_node":"ShaderNodeOctNullMat"

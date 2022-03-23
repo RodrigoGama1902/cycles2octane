@@ -4,6 +4,7 @@ import bpy
 import colorsys
 
 from . import cycles2octane_post_functions, cycles2octane_pre_functions
+from .json_manager import load_json
 
 convert_to = "OCTANE"
 
@@ -55,15 +56,8 @@ def node_replacer(node):
                             link(new_node.outputs[replace_in_out], link_s.to_socket)
                
     props = bpy.context.scene.cycles2octane
-    
-    json_path = os.path.dirname(os.path.realpath(__file__)) + '\\cycles2octane_data.json'
-        
-    if not json_check(json_path):
-        print("Invalid JSON")
-        return {'CANCELLED'}
-    
-    with open(json_path) as json_file:
-        json_data = json.load(json_file)
+            
+    json_data = load_json()
             
     # -----------------------------------------------  
     # Getting replacement information
@@ -195,16 +189,6 @@ def node_replacer(node):
     node_tree.nodes.remove(node)
     
     return new_node
-
-def json_check(json_path):
-
-    try:
-        with open(json_path) as json_file:
-            json_data = json.load(json_file)
-    except ValueError as e:
-        print('QS: Invalid Json')
-        return False
-    return True  
 
 def create_null_node(node, node_tree, null_links, group_inputs, group_outputs):
         
