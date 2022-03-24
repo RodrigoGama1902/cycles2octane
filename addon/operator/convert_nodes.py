@@ -25,7 +25,7 @@ class COC_OP_ConvertNodes(bpy.types.Operator):
                 node_tree.nodes.remove(node)
                 continue
 
-            if node.type == "GROUP":
+            if node.type == "GROUP" and not node.name.startswith("NULL_NODE_"):
                 self.convert_node_tree(node.node_tree)
             else:
                 if not node in self.ignore_nodes:

@@ -96,16 +96,11 @@ def node_replacer(node):
 
         node_item = None
 
-        if "NULL_NODE_" in node.name:
-            node_item = json_data[node.name.replace("NULL_NODE_", "")]
-            convert_to_node = node.name.replace("NULL_NODE_", "")
-
-        else:
+        if not "NULL_NODE_" in node.name:
             for item in json_data:
 
                 # Check if this cycle node replaces multiple octane nodes (list type)
                 if isinstance(json_data[item]["octane_node"], list):
-
                     for i in json_data[item]["octane_node"]:
                         if i == node.bl_idname:
                             node_item = json_data[item]
@@ -115,6 +110,9 @@ def node_replacer(node):
                 if json_data[item]["octane_node"] == node.bl_idname:
                     node_item = json_data[item]
                     convert_to_node = item
+        else:
+            node_item = json_data[node.name.replace("NULL_NODE_", "")]
+            convert_to_node = node.name.replace("NULL_NODE_", "")
 
         if node_item:
 
