@@ -1,24 +1,32 @@
-import json
-import os
+
 import bpy
 import colorsys
+
+from bpy.types import (Node,
+
+                       )
 
 from . import cycles2octane_post_functions, cycles2octane_pre_functions
 from .json_manager import load_json
 
-from typing import List
+from typing import List, Dict
 
 from dataclasses import dataclass
 
-convert_to = "OCTANE"
-
 
 @dataclass
-class CustomNodeGroup:
+class NullNode:
 
     group_inputs: List
     group_outputs: List
+    null_links: Dict
 
+@dataclass
+class ReplaceNodeData:
+
+    convert_to_node: str
+    replace_inputs: List
+    replace_outputs: List
 
 def node_replacer(node):
 
@@ -26,7 +34,7 @@ def node_replacer(node):
     # When in_out appers, means that depending on the input parameter, this value represents input or output
     def in_out_mng(input=True):
 
-        in_out_dict = replace_inputs if input else replace_outputs
+        in_out_dict = replace_node_data.replace_inputs if input else replace_node_data.replace_outputs
         node_for = node.inputs if input else node.outputs
         new_node_in_out = new_node.inputs if input else new_node.outputs
 
@@ -72,24 +80,14 @@ def node_replacer(node):
                                 new_node.outputs[replace_in_out], link_s.to_socket)
 
     props = bpy.context.scene.cycles2octane
-
     json_data = load_json()
 
     # -----------------------------------------------
     # Getting replacement information
     # -----------------------------------------------
 
-    convert_to_node = None
-    replace_inputs = {}
-    replace_outputs = {}
-
-    # NULL NODES DATA
-
-    null_links = {}
-    # This variable tells if the node that will replace the current one will be a null node
-    null_node = False
-
-    custom_group: CustomNodeGroup
+    replace_node_data = ReplaceNodeData(None, {}, {})
+    null_node = None
 
     # Convert to Cycles
     if props.convert_to == '0':
@@ -104,26 +102,24 @@ def node_replacer(node):
                     for i in json_data[item]["octane_node"]:
                         if i == node.bl_idname:
                             node_item = json_data[item]
-                            convert_to_node = item
+                            replace_node_data.convert_to_node = item
                     continue
 
                 if json_data[item]["octane_node"] == node.bl_idname:
                     node_item = json_data[item]
-                    convert_to_node = item
+                    replace_node_data.convert_to_node = item
+                    
         else:
             node_item = json_data[node.name.replace("NULL_NODE_", "")]
-            convert_to_node = node.name.replace("NULL_NODE_", "")
+            replace_node_data.convert_to_node = node.name.replace(
+                "NULL_NODE_", "")
 
         if node_item:
 
             for inp in node_item["inputs"]:
-                replace_inputs[node_item["inputs"][inp]] = inp
+                replace_node_data.replace_inputs[node_item["inputs"][inp]] = inp
             for out in node_item["outputs"]:
-                replace_outputs[node_item["outputs"][out]] = out
-
-            if node_item.get("null_links"):
-                for link in node_item["null_links"]:
-                    null_links[node_item["null_links"][link]] = link
+                replace_node_data.replace_outputs[node_item["outputs"][out]] = out
 
     # Convert to Octane
     if props.convert_to == '1':
@@ -133,27 +129,25 @@ def node_replacer(node):
             node_data = json_data[node.bl_idname]
 
             if node_data["octane_node"] == "None":
-                null_node = True
 
-                custom_group = CustomNodeGroup
-                custom_group.group_inputs = node_data["group_inputs"]
-                custom_group.group_outputs = node_data["group_outputs"]
+                null_node = NullNode(
+                    node_data["group_inputs"], node_data["group_outputs"], {})
 
             # Check if this cycle node replaces multiple octane nodes (list type)
             if isinstance(node_data["octane_node"], list):
-                convert_to_node = node_data["octane_node"][0]
+                replace_node_data.convert_to_node = node_data["octane_node"][0]
             else:
-                convert_to_node = node_data["octane_node"]
+                replace_node_data.convert_to_node = node_data["octane_node"]
 
             for i in node_data["inputs"]:
-                replace_inputs[i] = node_data["inputs"][i]
+                replace_node_data.replace_inputs[i] = node_data["inputs"][i]
 
             for i in node_data["outputs"]:
-                replace_outputs[i] = node_data["outputs"][i]
+                replace_node_data.replace_outputs[i] = node_data["outputs"][i]
 
             if node_data.get("null_links"):
                 for link in node_data["null_links"]:
-                    null_links[link] = node_data["null_links"][link]
+                    null_node.null_links[link] = node_data["null_links"][link]
 
     # Operation Pre Functions
     if hasattr(cycles2octane_pre_functions, node.bl_idname if not "NULL_NODE_" in node.name else node.name):
@@ -176,10 +170,10 @@ def node_replacer(node):
 
     if null_node:
         new_node = create_null_node(
-            node, node_tree, null_links, custom_group.group_inputs, custom_group.group_outputs)
+            node, node_tree, null_node.null_links, null_node.group_inputs, null_node.group_outputs)
     else:
-        if convert_to_node:
-            new_node = node_tree.nodes.new(convert_to_node)
+        if replace_node_data.convert_to_node:
+            new_node = node_tree.nodes.new(replace_node_data.convert_to_node)
         else:
             return
 
@@ -188,9 +182,9 @@ def node_replacer(node):
     # creating new Links
 
     node_index = False
-    if replace_inputs:
+    if replace_node_data.replace_inputs:
         node_index = True if [
-            f for f in replace_inputs][0].isdigit() else False
+            f for f in replace_node_data.replace_inputs][0].isdigit() else False
 
     in_out_mng(input=True)
     in_out_mng(input=False)
