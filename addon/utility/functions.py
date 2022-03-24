@@ -6,7 +6,18 @@ import colorsys
 from . import cycles2octane_post_functions, cycles2octane_pre_functions
 from .json_manager import load_json
 
+from typing import List
+
+from dataclasses import dataclass
+
 convert_to = "OCTANE"
+
+
+@dataclass
+class CustomNodeGroup:
+
+    group_inputs: List
+    group_outputs: List
 
 
 def node_replacer(node):
@@ -77,8 +88,8 @@ def node_replacer(node):
     null_links = {}
     # This variable tells if the node that will replace the current one will be a null node
     null_node = False
-    group_inputs = []
-    group_outputs = []
+
+    custom_group: CustomNodeGroup
 
     # Convert to Cycles
     if props.convert_to == '0':
@@ -126,8 +137,9 @@ def node_replacer(node):
             if node_data["octane_node"] == "None":
                 null_node = True
 
-                group_inputs = node_data["group_inputs"]
-                group_outputs = node_data["group_outputs"]
+                custom_group = CustomNodeGroup
+                custom_group.group_inputs = node_data["group_inputs"]
+                custom_group.group_outputs = node_data["group_outputs"]
 
             # Check if this cycle node replaces multiple octane nodes (list type)
             if isinstance(node_data["octane_node"], list):
@@ -166,7 +178,7 @@ def node_replacer(node):
 
     if null_node:
         new_node = create_null_node(
-            node, node_tree, null_links, group_inputs, group_outputs)
+            node, node_tree, null_links, custom_group.group_inputs, custom_group.group_outputs)
     else:
         if convert_to_node:
             new_node = node_tree.nodes.new(convert_to_node)
