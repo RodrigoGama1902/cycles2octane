@@ -127,6 +127,8 @@ def OctaneMixTexture(new_node, old_node):
         return new_node
 
     else:
+        replacement_node = None
+
         if old_node.blend_type == 'MULTIPLY':
             replacement_node = replace_node(new_node, "OctaneMultiplyTexture", {
                 "1": 0, "2": 1}, {"0": 0})

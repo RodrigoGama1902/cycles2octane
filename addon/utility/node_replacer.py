@@ -2,6 +2,7 @@
 import bpy
 
 from bpy.types import (Node,
+                       NodeSocket
 
                        )
 
@@ -11,35 +12,50 @@ from .node_functions import create_null_node, convert_old_to_new_socket_value
 
 from .json_manager import load_json
 
-from typing import List, Dict
-
 from dataclasses import dataclass
 
 
 @dataclass
 class NullNode:
+    '''Null Node Type, created when there is no replacement for particular node when converting'''
 
-    group_inputs: List
-    group_outputs: List
-    null_links: Dict
+    group_inputs: list
+    group_outputs: list
+    null_links: dict
+
+    def __bool__(self):
+
+        if not self.group_inputs and not self.group_outputs:
+            return False
+        return True
 
 
 @dataclass
 class ReplaceNodeData:
+    '''ReplaceNodeData will store all information necessary to correctly convert the node'''
 
     convert_to_node: str
-    replace_inputs: List
-    replace_outputs: List
+    replace_inputs: dict
+    replace_outputs: dict
+
+    def __bool__(self):
+
+        if not self.replace_inputs and not self.replace_outputs:
+            return False
+        return True
 
 
 class NodeReplacer:
+    '''The main class the executes the node replacement/conversion'''
 
     new_node: Node
 
     def __init__(self, node: Node):
 
         self.new_node = None
-        null_node = None
+
+        replace_node_data = ReplaceNodeData("", {}, {})
+        null_node = NullNode([], [], {})
 
         props = bpy.context.scene.cycles2octane
         json_data = load_json()
@@ -70,7 +86,8 @@ class NodeReplacer:
                 self.new_node = new_node
                 node.id_data.nodes.remove(node)
 
-    def _replace_node(self, node: Node, null_node: NullNode, replace_node_data: Dict) -> Node:
+    def _replace_node(self, node: Node, null_node: NullNode, replace_node_data: ReplaceNodeData) -> Node:
+        '''Execute the replace process using the ReplaceNodeData and NullNode data when exists '''
 
         node_tree = node.id_data
 
@@ -95,11 +112,12 @@ class NodeReplacer:
         return new_node
 
     @staticmethod
-    def _octane_to_cycles_node_data(node: Node, json_data: Dict) -> Dict:
+    def _octane_to_cycles_node_data(node: Node, json_data: dict) -> ReplaceNodeData:
+        '''Generate Replacement Node Data for Octane to Cycles conversion '''
 
         node_item = None
 
-        replace_node_data = ReplaceNodeData(None, {}, {})
+        replace_node_data = ReplaceNodeData("", {}, {})
 
         if not "NULL_NODE_" in node.name:
             for item in json_data:
@@ -131,10 +149,11 @@ class NodeReplacer:
         return replace_node_data
 
     @staticmethod
-    def _cycles_to_octane_node_data(node: Node, json_data: Dict) -> Dict:
+    def _cycles_to_octane_node_data(node: Node, json_data: dict) -> tuple[ReplaceNodeData, NullNode]:
+        '''Generate Replacement Node Data for Cycles to Octane conversion '''
 
-        replace_node_data = ReplaceNodeData(None, {}, {})
-        null_node = False
+        replace_node_data = ReplaceNodeData("", {}, {})
+        null_node = NullNode([], [], {})
 
         if node.bl_idname in json_data:
 
@@ -162,13 +181,17 @@ class NodeReplacer:
                     null_node.null_links[link] = node_data["null_links"][link]
 
             return replace_node_data, null_node
-        return None, None
+
+        return replace_node_data, null_node
 
     @staticmethod
     def _run_node_pre_function(node: Node) -> Node:
+        '''Executes the Pre Node Function If exists in cycles2octane_pre_functions.py'''
 
         # Operation Pre Functions
         if hasattr(cycles2octane_pre_functions, node.bl_idname if not "NULL_NODE_" in node.name else node.name):
+
+            node_pre_function: Node
 
             if not "NULL_NODE_" in node.name:
                 node_pre_function = getattr(
@@ -184,9 +207,11 @@ class NodeReplacer:
 
     @staticmethod
     def _run_node_post_function(node: Node, new_node: Node, null_node: NullNode) -> Node:
-        # Operation Post Functions
+        '''Executes the Post Node Function If exists in cycles2octane_post_functions.py'''
 
         if hasattr(cycles2octane_post_functions, new_node.bl_idname if not null_node else new_node.name):
+
+            node_function: Node = None
 
             if not null_node:
                 node_function = getattr(
@@ -201,9 +226,13 @@ class NodeReplacer:
             return new_node
 
     @staticmethod
-    def _replace_node_links(node: Node, new_node: Node, node_socket_data: Dict, socket_type: str) -> None:
+    def _replace_node_links(node: Node, new_node: Node, node_socket_data: dict, socket_type: str) -> None:
+        '''Executes the correct link replacement from the old node to the new node'''
 
         node_tree = node.id_data
+
+        old_node_sockets: NodeSocket = None
+        new_node_sockets: NodeSocket = None
 
         if socket_type == "INPUT":
             old_node_sockets = node.inputs

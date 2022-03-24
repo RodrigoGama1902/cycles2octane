@@ -11,6 +11,7 @@ from bpy.types import (NodeSocket,
 
 
 def create_node(original_node: Node, replace_bl_idname: str, location) -> Node:
+    '''Create Node using original node location'''
 
     node_tree = original_node.id_data
 
@@ -21,6 +22,7 @@ def create_node(original_node: Node, replace_bl_idname: str, location) -> Node:
 
 
 def create_node_link(node: Node, link1: NodeSocket, link2: NodeSocket) -> None:
+    '''Create Node Link'''
 
     node_tree = node.id_data
     link = node_tree.links.new
@@ -28,6 +30,7 @@ def create_node_link(node: Node, link1: NodeSocket, link2: NodeSocket) -> None:
 
 
 def replace_node(original_node: Node, replace_bl_idname: str, input_replace: Dict, output_replace: Dict) -> Node:
+    '''Create a new node, update the links from the old node, and deletes it'''
 
     replacement_node = create_node(
         original_node, replace_bl_idname, original_node.location)
@@ -48,6 +51,7 @@ def replace_node(original_node: Node, replace_bl_idname: str, input_replace: Dic
 
 
 def move_node_link_to_socket(node_socket: NodeSocket, to_socket_index: int) -> None:
+    '''Move a link from NodeSocket to another index'''
 
     node = node_socket.node
     node_tree = node.id_data
@@ -64,6 +68,7 @@ def move_node_link_to_socket(node_socket: NodeSocket, to_socket_index: int) -> N
 
 
 def create_null_node(node: Node, node_tree, null_links, group_inputs, group_outputs):
+    '''Create null node, used when there is no replacement for the original node on conversion'''
 
     group_tree = bpy.data.node_groups.new(
         "NULL_NODE_" + node.bl_idname, 'ShaderNodeTree')
@@ -98,6 +103,7 @@ def create_null_node(node: Node, node_tree, null_links, group_inputs, group_outp
 
 
 def convert_old_to_new_socket_value(new_socket: NodeSocket, old_value: Any) -> Any:
+    '''correctly convert the old node value, to the new node value'''
 
     if new_socket.type == "VALUE":
         if isinstance(old_value, (float, int)):
