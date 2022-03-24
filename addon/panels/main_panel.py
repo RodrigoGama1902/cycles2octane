@@ -27,7 +27,7 @@ class COC_PT_NodeConverter(COC_PT_ObjPanel):
 
         layout = self.layout
 
-        props = bpy.context.scene.cycles2octane
+        props = context.scene.cycles2octane
 
         row = layout.row()
         row.prop(props, "select_method")

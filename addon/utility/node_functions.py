@@ -1,7 +1,7 @@
 import colorsys
 import bpy
 
-from typing import List, Dict
+from typing import List, Dict, Any
 
 from bpy.types import (NodeSocket,
                        Node,
@@ -63,7 +63,7 @@ def move_node_link_to_socket(node_socket: NodeSocket, to_socket_index: int) -> N
             node_tree.links.remove(link)
 
 
-def create_null_node(node, node_tree, null_links, group_inputs, group_outputs):
+def create_null_node(node: Node, node_tree, null_links, group_inputs, group_outputs):
 
     group_tree = bpy.data.node_groups.new(
         "NULL_NODE_" + node.bl_idname, 'ShaderNodeTree')
@@ -97,7 +97,7 @@ def create_null_node(node, node_tree, null_links, group_inputs, group_outputs):
     return null_group
 
 
-def convert_old_to_new_socket_value(new_socket, old_value):
+def convert_old_to_new_socket_value(new_socket: NodeSocket, old_value: Any) -> Any:
 
     if new_socket.type == "VALUE":
         if isinstance(old_value, (float, int)):

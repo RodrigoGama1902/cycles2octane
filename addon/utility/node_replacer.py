@@ -230,7 +230,7 @@ class NodeReplacer:
                 if not replace_socket_identifier:
                     continue
 
-            # Getting Correct Socket Value, Any Error Will Result In Only Default Value Replacement
+            # Getting Correct Socket Value, Any Error Will just Result in no default socket value replacement, can be ignored for now
             if hasattr(old_node_socket, 'default_value') and hasattr(new_node_sockets[replace_socket_identifier], "default_value"):
 
                 try:
