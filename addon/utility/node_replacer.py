@@ -7,7 +7,7 @@ from bpy.types import (Node,
 
 from . import cycles2octane_post_functions, cycles2octane_pre_functions
 
-from .node_functions import create_null_node, get_correct_value
+from .node_functions import create_null_node, convert_old_to_new_socket_value
 
 from .json_manager import load_json
 
@@ -234,11 +234,13 @@ class NodeReplacer:
             if hasattr(old_node_socket, 'default_value') and hasattr(new_node_sockets[replace_socket_identifier], "default_value"):
 
                 try:
-                    new_node_sockets[replace_socket_identifier].default_value = get_correct_value(
+                    new_node_sockets[replace_socket_identifier].default_value = convert_old_to_new_socket_value(
                         new_node_sockets[replace_socket_identifier], old_node_socket.default_value)
                 except ValueError:
                     pass
                 except TypeError:
+                    pass
+                except AttributeError:
                     pass
 
             # Replace Links

@@ -97,26 +97,63 @@ def create_null_node(node, node_tree, null_links, group_inputs, group_outputs):
     return null_group
 
 
-def get_correct_value(socket, value):
+def convert_old_to_new_socket_value(new_socket, old_value):
 
-    if socket.type == "VALUE":
-        if isinstance(value, float) or isinstance(value, int):
-            return value
-        if isinstance(value, bpy.types.bpy_prop_array):
-            if len(value) == 4:
-                return value[-2]
-            if len(value) == 3:
-                return value[-1]
+    if new_socket.type == "VALUE":
+        if isinstance(old_value, (float, int)):
+            return old_value
 
-    if socket.type == "RGBA":
-        if isinstance(value, bpy.types.bpy_prop_array):
-            return value
-        if isinstance(value, float) or isinstance(value, int):
-            rgb = colorsys.hsv_to_rgb(0.5, 0, value)
+        if isinstance(old_value, bpy.types.bpy_prop_array):
+            if len(old_value) == 4:
+                return old_value[-2]
+            if len(old_value) == 3:
+                return old_value[-1]
 
+    if new_socket.type == "RGBA":
+
+        if isinstance(old_value, (float, int)):
+            rgb = colorsys.hsv_to_rgb(0.5, 0, old_value)
             rgba = [i for i in rgb]
             rgba.append(1)
 
             return rgba
 
-    return value
+        if len(old_value) == 3:
+            rgb = list(old_value)
+            rgba = [i for i in rgb]
+            rgba.append(1)
+
+            return rgba
+
+        if len(old_value) == 4:
+            rgba = [i for i in list(old_value)]
+
+            return rgba
+
+    # New Socket always will be CUSTOM when converting to Octane
+    if new_socket.type == "CUSTOM":
+
+        if hasattr(new_socket, "default_value"):
+            new_default_value = new_socket.default_value
+
+            # Handeling Int, Float Cases
+            if isinstance(new_default_value, (float, int)):
+                if isinstance(old_value, (float, int)):
+                    return old_value
+
+            # Handeling Color List Cases
+            if len(new_default_value) == 3:
+                if isinstance(old_value, (float, int)):
+                    rgb = [i for i in colorsys.hsv_to_rgb(0.5, 0, old_value)]
+                    return rgb
+
+                if len(old_value) == 3:
+                    rgb = [i for i in list(old_value)]
+
+                    return rgb
+
+                if len(old_value) == 4:
+                    rgba = [i for i in list(old_value)]
+                    return rgba[:-1]
+
+    return old_value
