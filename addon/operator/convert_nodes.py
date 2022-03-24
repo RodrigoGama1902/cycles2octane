@@ -3,8 +3,9 @@ import bpy
 from bpy.types import (ShaderNodeTree,
                        )
 
-from ..utility import cycles2octane_post_functions
-from ..utility.functions import node_replacer, get_materials_selected
+
+from ..utility.functions import get_materials_selected
+from ..utility.node_replacer import NodeReplacer
 
 
 class COC_OP_ConvertNodes(bpy.types.Operator):
@@ -29,7 +30,7 @@ class COC_OP_ConvertNodes(bpy.types.Operator):
                 self.convert_node_tree(node.node_tree)
             else:
                 if not node in self.ignore_nodes:
-                    replaced_node = node_replacer(node)
+                    replaced_node = NodeReplacer(node).new_node
                     self.ignore_nodes.append(replaced_node)
 
         self.ignore_nodes.clear()

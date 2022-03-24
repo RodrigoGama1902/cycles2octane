@@ -1,7 +1,6 @@
 import bpy
 
-from .functions import get_correct_value
-from .node_functions import replace_node, move_node_link_to_socket
+from .node_functions import replace_node, move_node_link_to_socket, get_correct_value
 
 # Functions that will run after the replaced node were created
 
