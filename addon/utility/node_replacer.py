@@ -8,7 +8,7 @@ from bpy.types import (Node,
 
 from . import cycles2octane_post_functions, cycles2octane_pre_functions
 
-from .node_functions import create_null_node, convert_old_to_new_socket_value
+from .node_functions import create_null_node, convert_old_to_new_socket_value, get_correct_custom_group_original_node_name
 
 from .json_manager import load_json
 
@@ -137,9 +137,12 @@ class NodeReplacer:
                     replace_node_data.convert_to_node = item
 
         else:
-            node_item = json_data[node.name.replace("NULL_NODE_", "")]
-            replace_node_data.convert_to_node = node.name.replace(
-                "NULL_NODE_", "")
+            
+            original_null_node_name = get_correct_custom_group_original_node_name(
+                node.name, "NULL_NODE_")
+            
+            node_item = json_data[original_null_node_name]
+            replace_node_data.convert_to_node = original_null_node_name
 
         if node_item:
 

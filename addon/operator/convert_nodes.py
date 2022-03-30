@@ -63,5 +63,6 @@ class COC_OP_ConvertNodes(bpy.types.Operator):
 
         # TODO Return the convertion result, amount of node that could be converted or not
         # TODO Add Dynamic property to the json data, so that other properties that are not input or output can be dynamically updated without pre/post functions
+        # TODO Add support for functional node groups, like when converting the Cycles HUE Node to Octane HUE node. A node group will have to be created with math values to set the correct values
 
         return {'FINISHED'}

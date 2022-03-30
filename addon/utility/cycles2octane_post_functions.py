@@ -140,17 +140,20 @@ def OctaneUniversalMaterial(new_node, old_node):
     if new_node.inputs['Transmission'].links:
         new_node.inputs['Albedo'].default_value = (0, 0, 0)
 
-    if not old_node.inputs['Transmission'].links:
-        if not old_node.inputs['Transmission'].default_value == 0:
-            rgb_node = create_node(
-                new_node, "OctaneRGBColor", location=[new_node.location[0] - 200, new_node.location[1]])
+    print(old_node)
 
-            rgb_node.a_value = old_node.inputs["Base Color"].default_value[:-1]
+    if old_node.inputs.get('Transmission'):
+        if not old_node.inputs['Transmission'].links:
+            if not old_node.inputs['Transmission'].default_value == 0:
+                rgb_node = create_node(
+                    new_node, "OctaneRGBColor", location=[new_node.location[0] - 200, new_node.location[1]])
 
-            create_node_link(
-                rgb_node, rgb_node.outputs[0], new_node.inputs["Transmission"])
+                rgb_node.a_value = old_node.inputs["Base Color"].default_value[:-1]
 
-            new_node.inputs['Albedo'].default_value = (0, 0, 0)
+                create_node_link(
+                    rgb_node, rgb_node.outputs[0], new_node.inputs["Transmission"])
+
+                new_node.inputs['Albedo'].default_value = (0, 0, 0)
 
     return new_node
 
