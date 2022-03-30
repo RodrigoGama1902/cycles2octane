@@ -103,11 +103,13 @@ class NodeReplacer:
 
         new_node.location = node.location
 
-        self._replace_node_links(node, new_node,
-                                 replace_node_data.replace_inputs, "INPUT")
+        if replace_node_data.replace_inputs:
+            self._replace_node_links(node, new_node,
+                                     replace_node_data.replace_inputs, "INPUT")
 
-        self._replace_node_links(node, new_node,
-                                 replace_node_data.replace_outputs, "OUTPUT")
+        if replace_node_data.replace_outputs:
+            self._replace_node_links(node, new_node,
+                                     replace_node_data.replace_outputs, "OUTPUT")
 
         return new_node
 
@@ -245,6 +247,7 @@ class NodeReplacer:
         for idx, old_node_socket in enumerate(old_node_sockets):
 
             # Getting Correct Replace Socket Identifier
+
             if [key for key in node_socket_data][0].isdigit():
                 try:
                     replace_socket_identifier = int(node_socket_data[str(idx)])

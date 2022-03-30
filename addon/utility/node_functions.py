@@ -1,7 +1,7 @@
 import colorsys
 import bpy
 
-from typing import List, Dict, Any
+from typing import Any
 
 from bpy.types import (NodeSocket,
                        Node,
@@ -29,7 +29,7 @@ def create_node_link(node: Node, link1: NodeSocket, link2: NodeSocket) -> None:
     link(link1, link2)
 
 
-def replace_node(original_node: Node, replace_bl_idname: str, input_replace: Dict, output_replace: Dict) -> Node:
+def replace_node(original_node: Node, replace_bl_idname: str, input_replace: dict, output_replace: dict) -> Node:
     '''Create a new node, update the links from the old node, and deletes it'''
 
     replacement_node = create_node(

@@ -1,7 +1,7 @@
 {
   "ShaderNodeBsdfTranslucent": {
     "inputs": {
-      "Color": "Albedo color",
+      "Color": "Albedo",
       "Normal": "Normal"
     },
 
@@ -55,12 +55,12 @@
     "inputs": {
       "Surface": "Surface",
       "Volume": "Volume",
-      "Displacement": "Geometry"
+      "Displacement": "Octane Geometry"
     },
 
     "outputs": {},
 
-    "octane_node": "OctaneEditorMaterialOutputNode"
+    "octane_node": "ShaderNodeOutputMaterial"
   },
 
   "ShaderNodeInvert": {
@@ -144,8 +144,8 @@
   "ShaderNodeMixShader": {
     "inputs": {
       "0": "0",
-      "1": "1",
-      "2": "2"
+      "1": "2",
+      "2": "1"
     },
 
     "outputs": {
@@ -153,6 +153,20 @@
     },
 
     "octane_node": "OctaneMixMaterial"
+  },
+
+  "ShaderNodeBsdfDiffuse": {
+    "inputs": {
+      "Color": "Diffuse",
+      "Roughness": "Roughness",
+      "Normal": "Normal"
+    },
+
+    "outputs": {
+      "BSDF": "Material out"
+    },
+
+    "octane_node": "OctaneDiffuseMaterial"
   },
 
   "ShaderNodeAddShader": {
@@ -183,12 +197,12 @@
     "group_inputs": {
       "Strength": "NodeSocketFloatFactor",
       "Distance": "NodeSocketFloatFactor",
-      "Height": "NodeSocketShader",
-      "Normal": "NodeSocketShader"
+      "Height": "NodeSocketColor",
+      "Normal": "NodeSocketColor"
     },
     "group_outputs": {
-      "Bump": "NodeSocketShader",
-      "Normal": "NodeSocketShader"
+      "Bump": "NodeSocketColor",
+      "Normal": "NodeSocketColor"
     },
 
     "null_links": {
@@ -211,9 +225,9 @@
 
     "group_inputs": {
       "Strength": "NodeSocketFloatFactor",
-      "Color": "NodeSocketShader"
+      "Color": "NodeSocketColor"
     },
-    "group_outputs": { "Normal": "NodeSocketShader" },
+    "group_outputs": { "Normal": "NodeSocketColor" },
 
     "null_links": {
       "Color": "Normal"

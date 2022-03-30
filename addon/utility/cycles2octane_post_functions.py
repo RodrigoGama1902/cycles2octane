@@ -105,6 +105,8 @@ def OctaneUniversalMaterial(new_node, old_node):
     if new_node.inputs['Transmission'].links:
         new_node.inputs['Albedo'].default_value = (0, 0, 0)
 
+    return new_node
+
 
 def ShaderNodeOctImageTex(new_node, old_node):
 

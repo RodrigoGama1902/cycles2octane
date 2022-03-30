@@ -1,16 +1,16 @@
 import bpy
 
-from ..utility.functions import get_materials_selected
+from ..utility.material_functions import get_materials_selected
 
 
 class COC_PT_ObjPanel(bpy.types.Panel):
     bl_space_type = 'VIEW_3D'
     bl_region_type = 'UI'
-    bl_category = 'Ilustraviz'
+    bl_category = 'Octane'
 
 
 class COC_PT_MainPanel(COC_PT_ObjPanel):
-    bl_label = "Cycles to Octane"
+    bl_label = "Cycles2Octane"
     bl_options = {'DEFAULT_CLOSED'}
 
     def draw(self, context):
@@ -45,5 +45,3 @@ class COC_PT_NodeConverter(COC_PT_ObjPanel):
 
         row.scale_y = 1.3
         row.operator("coc.convert_nodes", icon="NODETREE")
-        #row = layout.row()
-        # row.operator("coc.octanedatacheck")

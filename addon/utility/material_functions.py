@@ -1,8 +1,11 @@
 
 import bpy
 
+from bpy.types import (Material)
 
-def get_materials_selected():
+
+def get_materials_selected() -> list[Material]:
+    '''Get selected materials using as parameter the current convert method (Active Material, Active Object or Selected Objects'''
 
     props = bpy.context.scene.cycles2octane
 
