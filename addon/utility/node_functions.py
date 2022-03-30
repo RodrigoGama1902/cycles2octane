@@ -67,6 +67,18 @@ def move_node_link_to_socket(node_socket: NodeSocket, to_socket_index: int) -> N
             node_tree.links.remove(link)
 
 
+def remove_node_and_pass_link_through(node: Node, input_index: int = 0, output_index: int = 0) -> None:
+    '''remove inputted node, and pass the link through the input.from_socket to output.from_socket'''
+
+    node_tree = node.id_data
+
+    for link in node.outputs[output_index].links:
+        create_node_link(
+            node, node.inputs[input_index].links[0].from_socket, link.to_socket)
+
+    node_tree.nodes.remove(node)
+
+
 def create_null_node(node: Node, node_tree, null_links, group_inputs, group_outputs):
     '''Create null node, used when there is no replacement for the original node on conversion'''
 
@@ -183,3 +195,14 @@ def get_node_name_without_duplicate(node_name):
             node_name = node_name[:-4]
 
     return node_name
+
+
+def remove_reroute_node_from_node_tree(node_tree):
+
+    for node in node_tree.nodes:
+
+        if node.type == "GROUP":
+            remove_reroute_node_from_node_tree(node.node_tree)
+
+        if node.type == "REROUTE":
+            remove_node_and_pass_link_through(node, 0, 0)

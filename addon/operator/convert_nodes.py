@@ -7,6 +7,7 @@ from bpy.types import (ShaderNodeTree,
 from ..utility import cycles2octane_format_nodes
 from ..utility.material_functions import get_materials_selected
 from ..utility.node_replacer import NodeReplacer
+from ..utility.node_functions import remove_reroute_node_from_node_tree
 
 
 class COC_OP_DeleteNodes(bpy.types.Operator):
@@ -34,6 +35,11 @@ class COC_OP_ConvertNodes(bpy.types.Operator):
     bl_label = "Convert Material Nodes"
     bl_options = {'REGISTER', 'UNDO'}
 
+    # TODO Return the convertion result, amount of node that could be converted or not
+    # TODO Add Dynamic property to the json data, so that other properties that are not input or output can be dynamically updated without pre/post functions
+    # TODO Add support for functional node groups, like when converting the Cycles HUE Node to Octane HUE node. A node group will have to be created with math values to set the correct values
+    # TODO Add support for reroute nodes, a function to get connected node will have to be created, and implemented in all code
+
     ignore_nodes: list = []
 
     def _convert_node_tree(self, node_tree: ShaderNodeTree):
@@ -56,24 +62,29 @@ class COC_OP_ConvertNodes(bpy.types.Operator):
 
         self.ignore_nodes.clear()
 
-    @staticmethod
-    def _format_node_tree(node_tree: ShaderNodeTree) -> None:
+    def _format_node_tree(self, node_tree: ShaderNodeTree) -> None:
+
+        remove_reroute_node_from_node_tree(node_tree)
 
         for node in node_tree.nodes:
             # Format Nodes
-            if hasattr(cycles2octane_format_nodes, node.bl_idname if not "NULL_NODE_" in node.name else node.name):
 
-                node_format: Node
+            if node.type == "GROUP":
+                self._format_node_tree(node.node_tree)
+            else:
+                if hasattr(cycles2octane_format_nodes, node.bl_idname if not "NULL_NODE_" in node.name else node.name):
 
-                if not "NULL_NODE_" in node.name:
-                    node_format = getattr(
-                        cycles2octane_format_nodes, node.bl_idname, False)
-                else:
-                    node_format = getattr(
-                        cycles2octane_format_nodes, node.name, False)
+                    node_format: Node
 
-                if node_format:
-                    node_format(node)
+                    if not "NULL_NODE_" in node.name:
+                        node_format = getattr(
+                            cycles2octane_format_nodes, node.bl_idname, False)
+                    else:
+                        node_format = getattr(
+                            cycles2octane_format_nodes, node.name, False)
+
+                    if node_format:
+                        node_format(node)
 
     def execute(self, context):
 
@@ -81,9 +92,5 @@ class COC_OP_ConvertNodes(bpy.types.Operator):
         for mat in mat_data:
             if mat:
                 self._convert_node_tree(mat.node_tree)
-
-        # TODO Return the convertion result, amount of node that could be converted or not
-        # TODO Add Dynamic property to the json data, so that other properties that are not input or output can be dynamically updated without pre/post functions
-        # TODO Add support for functional node groups, like when converting the Cycles HUE Node to Octane HUE node. A node group will have to be created with math values to set the correct values
 
         return {'FINISHED'}
