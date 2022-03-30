@@ -141,6 +141,19 @@
     "octane_node": "OctaneNullMaterial"
   },
 
+  "ShaderNodeAddShader": {
+    "inputs": {
+      "0": "1",
+      "1": "2"
+    },
+
+    "outputs": {
+      "0": "0"
+    },
+
+    "octane_node": "OctaneMixMaterial"
+  },
+
   "ShaderNodeMixShader": {
     "inputs": {
       "0": "0",
@@ -167,19 +180,6 @@
     },
 
     "octane_node": "OctaneDiffuseMaterial"
-  },
-
-  "ShaderNodeAddShader": {
-    "inputs": {
-      "0": "1",
-      "1": "2"
-    },
-
-    "outputs": {
-      "0": "0"
-    },
-
-    "octane_node": "OctaneMixMaterial"
   },
 
   "ShaderNodeBump": {

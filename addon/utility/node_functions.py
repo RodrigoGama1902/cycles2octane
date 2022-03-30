@@ -167,11 +167,19 @@ def convert_old_to_new_socket_value(new_socket: NodeSocket, old_value: Any) -> A
 
 def get_correct_custom_group_original_node_name(node_name, prefix):
 
-    if node_name[-4] == "." and node_name[-3].isdigit() and node_name[-2].isdigit() and node_name[-1].isdigit():
-        node_name = node_name[:-4]
+    node_name = get_node_name_without_duplicate(node_name)
 
     if node_name.startswith(prefix):
         node_name = node_name.replace(
             prefix, "")
+
+    return node_name
+
+
+def get_node_name_without_duplicate(node_name):
+
+    if len(node_name) >= 5:
+        if node_name[-4] == "." and node_name[-3].isdigit() and node_name[-2].isdigit() and node_name[-1].isdigit():
+            node_name = node_name[:-4]
 
     return node_name

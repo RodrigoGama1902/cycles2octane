@@ -1,9 +1,10 @@
 import bpy
 
 from bpy.types import (ShaderNodeTree,
+                       Node
                        )
 
-
+from ..utility import cycles2octane_format_nodes
 from ..utility.material_functions import get_materials_selected
 from ..utility.node_replacer import NodeReplacer
 
@@ -38,6 +39,8 @@ class COC_OP_ConvertNodes(bpy.types.Operator):
     def _convert_node_tree(self, node_tree: ShaderNodeTree):
         '''Convert all nodes, including nodes inside node groups'''
 
+        self._format_node_tree(node_tree)
+
         for node in node_tree.nodes:
 
             if node.type == "FRAME":
@@ -53,10 +56,28 @@ class COC_OP_ConvertNodes(bpy.types.Operator):
 
         self.ignore_nodes.clear()
 
+    @staticmethod
+    def _format_node_tree(node_tree: ShaderNodeTree) -> None:
+
+        for node in node_tree.nodes:
+            # Format Nodes
+            if hasattr(cycles2octane_format_nodes, node.bl_idname if not "NULL_NODE_" in node.name else node.name):
+
+                node_format: Node
+
+                if not "NULL_NODE_" in node.name:
+                    node_format = getattr(
+                        cycles2octane_format_nodes, node.bl_idname, False)
+                else:
+                    node_format = getattr(
+                        cycles2octane_format_nodes, node.name, False)
+
+                if node_format:
+                    node_format(node)
+
     def execute(self, context):
 
         mat_data = get_materials_selected()
-
         for mat in mat_data:
             if mat:
                 self._convert_node_tree(mat.node_tree)

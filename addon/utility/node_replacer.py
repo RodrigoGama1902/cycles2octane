@@ -8,7 +8,7 @@ from bpy.types import (Node,
 
 from . import cycles2octane_post_functions, cycles2octane_pre_functions
 
-from .node_functions import create_null_node, convert_old_to_new_socket_value, get_correct_custom_group_original_node_name
+from .node_functions import create_null_node, convert_old_to_new_socket_value, get_correct_custom_group_original_node_name, get_node_name_without_duplicate
 
 from .json_manager import load_json
 
@@ -111,6 +111,8 @@ class NodeReplacer:
             self._replace_node_links(node, new_node,
                                      replace_node_data.replace_outputs, "OUTPUT")
 
+        new_node.name = node.bl_idname
+
         return new_node
 
     @staticmethod
@@ -122,25 +124,33 @@ class NodeReplacer:
         replace_node_data = ReplaceNodeData("", {}, {})
 
         if not "NULL_NODE_" in node.name:
-            for item in json_data:
 
-                # Check if this cycle node replaces multiple octane nodes (list type)
-                if isinstance(json_data[item]["octane_node"], list):
-                    for i in json_data[item]["octane_node"]:
-                        if i == node.bl_idname:
-                            node_item = json_data[item]
-                            replace_node_data.convert_to_node = item
-                    continue
+            # Check if replacement node were written in the octane node name
+            if get_node_name_without_duplicate(node.name) in json_data:
+                node_item = json_data[get_node_name_without_duplicate(
+                    node.name)]
+                replace_node_data.convert_to_node = get_node_name_without_duplicate(
+                    node.name)
 
-                if json_data[item]["octane_node"] == node.bl_idname:
-                    node_item = json_data[item]
-                    replace_node_data.convert_to_node = item
+            else:
+
+                for item in json_data:
+                    # Check if this cycle node replaces multiple octane nodes (list type)
+                    if isinstance(json_data[item]["octane_node"], list):
+                        for i in json_data[item]["octane_node"]:
+                            if i == node.bl_idname:
+                                node_item = json_data[item]
+                                replace_node_data.convert_to_node = item
+                        continue
+
+                    if json_data[item]["octane_node"] == node.bl_idname:
+                        node_item = json_data[item]
+                        replace_node_data.convert_to_node = item
 
         else:
-            
             original_null_node_name = get_correct_custom_group_original_node_name(
                 node.name, "NULL_NODE_")
-            
+
             node_item = json_data[original_null_node_name]
             replace_node_data.convert_to_node = original_null_node_name
 
