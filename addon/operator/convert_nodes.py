@@ -62,5 +62,6 @@ class COC_OP_ConvertNodes(bpy.types.Operator):
                 self._convert_node_tree(mat.node_tree)
 
         # TODO Return the convertion result, amount of node that could be converted or not
+        # TODO Add Dynamic property to the json data, so that other properties that are not input or output can be dynamically updated without pre/post functions
 
         return {'FINISHED'}

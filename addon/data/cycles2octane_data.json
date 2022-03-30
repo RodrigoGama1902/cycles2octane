@@ -273,5 +273,22 @@
     },
 
     "octane_node": "OctaneRGBColor"
+  },
+
+  "ShaderNodeMapRange": {
+    "inputs": {
+      "Value": "Value",
+      "From Min": "Input min",
+      "From Max": "Input max",
+      "To Min": "Output min",
+      "To Max": "Output max",
+      "Steps": "Steps"
+    },
+
+    "outputs": {
+      "Result": "Texture out"
+    },
+
+    "octane_node": "OctaneRange"
   }
 }

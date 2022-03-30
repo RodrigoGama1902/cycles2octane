@@ -112,6 +112,25 @@ def ShaderNodeRGB(new_node, old_node):
 
     return new_node
 
+
+def ShaderNodeMapRange(new_node, old_node):
+    
+    if old_node.inputs[1].default_value == "Linear":
+        new_node.interpolation_type = 'LINEAR'
+
+    if old_node.inputs[1].default_value == "Steps":
+        new_node.interpolation_type = 'STEPPED'
+
+    if old_node.inputs[1].default_value == "Smoothstep":
+        new_node.interpolation_type = 'SMOOTHSTEP'
+    
+    if old_node.inputs[1].default_value == "Smootherstep":
+        new_node.interpolation_type == "SMOOTHERSTEP"
+        
+    new_node.clamp = old_node.inputs['Clamp'].default_value
+    
+    return new_node
+
 # OCTANE NODES
 
 
@@ -135,6 +154,24 @@ def OctaneUniversalMaterial(new_node, old_node):
 
     return new_node
 
+
+def OctaneRange(new_node, old_node):
+    
+    if old_node.interpolation_type == 'LINEAR':
+        new_node.inputs[1].default_value = "Linear"
+    
+    if old_node.interpolation_type == 'STEPPED':
+        new_node.inputs[1].default_value = "Steps"
+    
+    if old_node.interpolation_type == 'SMOOTHSTEP':
+        new_node.inputs[1].default_value = "Smoothstep"
+        
+    if old_node.interpolation_type == 'SMOOTHERSTEP':
+        new_node.inputs[1].default_value = "Smootherstep"
+    
+    new_node.inputs['Clamp'].default_value = old_node.clamp
+    
+    return new_node
 
 def ShaderNodeOctImageTex(new_node, old_node):
 
