@@ -1,6 +1,11 @@
 import bpy
 
-from .node_functions import replace_node, move_node_link_to_socket, convert_old_to_new_socket_value
+from .node_functions import (
+    replace_node,
+    move_node_link_to_socket,
+    convert_old_to_new_socket_value,
+    create_node_link,
+    create_node)
 
 # Functions that will run after the replaced node were created
 
@@ -96,6 +101,17 @@ def ShaderNodeMixRGB(new_node, old_node):
 
     return new_node
 
+
+def ShaderNodeRGB(new_node, old_node):
+
+    rgb = list(old_node.a_value)
+    rgba = [i for i in rgb]
+    rgba.append(1)
+
+    new_node.outputs[0].default_value = rgba
+
+    return new_node
+
 # OCTANE NODES
 
 
@@ -105,12 +121,31 @@ def OctaneUniversalMaterial(new_node, old_node):
     if new_node.inputs['Transmission'].links:
         new_node.inputs['Albedo'].default_value = (0, 0, 0)
 
+    if not old_node.inputs['Transmission'].links:
+        if not old_node.inputs['Transmission'].default_value == 0:
+            rgb_node = create_node(
+                new_node, "OctaneRGBColor", location=[new_node.location[0] - 200, new_node.location[1]])
+
+            rgb_node.a_value = old_node.inputs["Base Color"].default_value[:-1]
+
+            create_node_link(
+                rgb_node, rgb_node.outputs[0], new_node.inputs["Transmission"])
+
+            new_node.inputs['Albedo'].default_value = (0, 0, 0)
+
     return new_node
 
 
 def ShaderNodeOctImageTex(new_node, old_node):
 
     new_node.image = old_node.image
+
+    return new_node
+
+
+def OctaneRGBColor(new_node, old_node):
+
+    new_node.a_value = old_node.outputs[0].default_value[:-1]
 
     return new_node
 
@@ -226,7 +261,7 @@ def NULL_NODE_ShaderNodeBump(new_node, old_node):
         if new_node.outputs["Normal"].links:
 
             for i in new_node.outputs["Normal"].links:
-                if i.to_node.type == "OCT_UNIVERSAL_MAT":
+                if i.to_node.bl_idname == "OctaneUniversalMaterial":
                     if i.to_socket.name == "Normal":
 
                         link = node_tree.links.new

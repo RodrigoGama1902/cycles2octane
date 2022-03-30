@@ -10,12 +10,12 @@ from bpy.types import (NodeSocket,
                        )
 
 
-def create_node(original_node: Node, replace_bl_idname: str, location) -> Node:
-    '''Create Node using original node location'''
+def create_node(original_node: Node, bl_idname: str, location: list[float] = [0, 0, 0]) -> Node:
+    '''Create new node using original node as reference'''
 
     node_tree = original_node.id_data
 
-    node = node_tree.nodes.new(replace_bl_idname)
+    node = node_tree.nodes.new(bl_idname)
     node.location = location
 
     return node
