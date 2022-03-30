@@ -6,14 +6,13 @@ from typing import Any
 from bpy.types import (NodeSocket,
                        Node,
                        NodeLink,
-                       NodeSocket
+                       NodeSocket,
+                       NodeTree
                        )
 
 
-def create_node(original_node: Node, bl_idname: str, location: list[float] = [0, 0, 0]) -> Node:
+def create_node(node_tree: NodeTree, bl_idname: str, location: list[float] = [0, 0]) -> Node:
     '''Create new node using original node as reference'''
-
-    node_tree = original_node.id_data
 
     node = node_tree.nodes.new(bl_idname)
     node.location = location
@@ -21,10 +20,9 @@ def create_node(original_node: Node, bl_idname: str, location: list[float] = [0,
     return node
 
 
-def create_node_link(node: Node, link1: NodeSocket, link2: NodeSocket) -> None:
+def create_node_link(node_tree: NodeTree, link1: NodeSocket, link2: NodeSocket) -> None:
     '''Create Node Link'''
 
-    node_tree = node.id_data
     link = node_tree.links.new
     link(link1, link2)
 
@@ -33,19 +31,19 @@ def replace_node(original_node: Node, replace_bl_idname: str, input_replace: dic
     '''Create a new node, update the links from the old node, and deletes it'''
 
     replacement_node = create_node(
-        original_node, replace_bl_idname, original_node.location)
+        original_node.id_data, replace_bl_idname, original_node.location)
 
     if input_replace:
         for i in input_replace:
             if original_node.inputs[int(i)].links:
                 create_node_link(
-                    original_node, original_node.inputs[int(i)].links[0].from_socket, replacement_node.inputs[input_replace[i]])
+                    original_node.id_data, original_node.inputs[int(i)].links[0].from_socket, replacement_node.inputs[input_replace[i]])
 
     if output_replace:
         for i in output_replace:
             for link in original_node.outputs[int(i)].links:
                 create_node_link(
-                    original_node, link.to_socket, replacement_node.outputs[output_replace[i]])
+                    original_node.id_data, link.to_socket, replacement_node.outputs[output_replace[i]])
 
     return replacement_node
 
@@ -59,10 +57,10 @@ def move_node_link_to_socket(node_socket: NodeSocket, to_socket_index: int) -> N
     for link in node_socket.links:
         if link.from_node == node:  # Meaning that is an output node
             create_node_link(
-                node, node.outputs[to_socket_index], link.to_socket)
+                node.id_data, node.outputs[to_socket_index], link.to_socket)
         else:
             create_node_link(
-                node, link.from_socket, node.inputs[to_socket_index])
+                node.id_data, link.from_socket, node.inputs[to_socket_index])
 
             node_tree.links.remove(link)
 
@@ -74,7 +72,7 @@ def remove_node_and_pass_link_through(node: Node, input_index: int = 0, output_i
 
     for link in node.outputs[output_index].links:
         create_node_link(
-            node, node.inputs[input_index].links[0].from_socket, link.to_socket)
+            node.id_data, node.inputs[input_index].links[0].from_socket, link.to_socket)
 
     node_tree.nodes.remove(node)
 

@@ -6,9 +6,15 @@ from bpy.types import (Node,
 
                        )
 
-from . import cycles2octane_post_functions, cycles2octane_pre_functions
+from . import cycles2octane_post_functions, cycles2octane_pre_functions, cycles2octane_custom_node_groups
 
-from .node_functions import create_null_node, convert_old_to_new_socket_value, get_correct_custom_group_original_node_name, get_node_name_without_duplicate
+from .cycles2octane_custom_node_groups import CustomNodeGroupsGenerator
+
+from .node_functions import (create_null_node,
+                             convert_old_to_new_socket_value,
+                             get_correct_custom_group_original_node_name,
+                             get_node_name_without_duplicate,
+                             )
 
 from .json_manager import load_json
 
@@ -26,6 +32,18 @@ class NullNode:
     def __bool__(self):
 
         if not self.group_inputs and not self.group_outputs:
+            return False
+        return True
+
+
+@dataclass
+class CustomNodeGroup:
+
+    custom_node_group: str
+
+    def __bool__(self):
+
+        if not self.custom_node_group:
             return False
         return True
 
@@ -56,6 +74,7 @@ class NodeReplacer:
 
         replace_node_data = ReplaceNodeData("", {}, {})
         null_node = NullNode([], [], {})
+        custom_node_group = CustomNodeGroup("")
 
         props = bpy.context.scene.cycles2octane
         json_data = load_json()
@@ -67,7 +86,7 @@ class NodeReplacer:
 
         # Generate Cycles To Octane Node Data
         if props.convert_to == '1':
-            replace_node_data, null_node = self._cycles_to_octane_node_data(
+            replace_node_data, null_node, custom_node_group = self._cycles_to_octane_node_data(
                 node, json_data)
 
         # Starting Replacement
@@ -76,7 +95,8 @@ class NodeReplacer:
             # Running Pre Node Function
             node = self._run_node_pre_function(node)
 
-            new_node = self._replace_node(node, null_node, replace_node_data)
+            new_node = self._replace_node(
+                node, null_node, custom_node_group, replace_node_data)
 
             if new_node:
 
@@ -86,7 +106,7 @@ class NodeReplacer:
                 self.new_node = new_node
                 node.id_data.nodes.remove(node)
 
-    def _replace_node(self, node: Node, null_node: NullNode, replace_node_data: ReplaceNodeData) -> Node:
+    def _replace_node(self, node: Node, null_node: NullNode, custom_node_group: CustomNodeGroup, replace_node_data: ReplaceNodeData) -> Node:
         '''Execute the replace process using the ReplaceNodeData and NullNode data when exists '''
 
         node_tree = node.id_data
@@ -94,6 +114,10 @@ class NodeReplacer:
         if null_node:
             new_node = create_null_node(
                 node, node_tree, null_node.null_links, null_node.group_inputs, null_node.group_outputs)
+
+        elif custom_node_group:
+            new_node = self._create_custom_node_group(node)
+
         else:
             if replace_node_data.convert_to_node:
                 new_node = node_tree.nodes.new(
@@ -169,6 +193,7 @@ class NodeReplacer:
 
         replace_node_data = ReplaceNodeData("", {}, {})
         null_node = NullNode([], [], {})
+        custom_node_group = CustomNodeGroup("")
 
         if node.bl_idname in json_data:
 
@@ -178,6 +203,10 @@ class NodeReplacer:
 
                 null_node = NullNode(
                     node_data["group_inputs"], node_data["group_outputs"], {})
+
+            if node_data.get("use_custom_group"):
+
+                custom_node_group = CustomNodeGroup(node.bl_idname)
 
             # Check if this cycle node replaces multiple octane nodes (list type)
             if isinstance(node_data["octane_node"], list):
@@ -195,9 +224,9 @@ class NodeReplacer:
                 for link in node_data["null_links"]:
                     null_node.null_links[link] = node_data["null_links"][link]
 
-            return replace_node_data, null_node
+            return replace_node_data, null_node, custom_node_group
 
-        return replace_node_data, null_node
+        return replace_node_data, null_node, custom_node_group
 
     @staticmethod
     def _run_node_pre_function(node: Node) -> Node:
@@ -237,6 +266,21 @@ class NodeReplacer:
 
             if node_function:
                 new_node = node_function(new_node, node)
+
+            return new_node
+
+    @staticmethod
+    def _create_custom_node_group(node: Node) -> Node:
+
+        new_custom_node_group = CustomNodeGroupsGenerator(node)
+
+        if hasattr(new_custom_node_group, node.bl_idname):
+
+            custom_node_group_generator = getattr(
+                new_custom_node_group, node.bl_idname, False)
+
+            if custom_node_group_generator:
+                new_node = custom_node_group_generator()
 
             return new_node
 

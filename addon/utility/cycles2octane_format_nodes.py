@@ -44,17 +44,17 @@ def ShaderNodeBsdfPrincipled(node: Node):
                             # So when this node is converted to Universal Material, the color input will be used
 
                             create_node_link(
-                                node, node.inputs["Transmission"], translucent_node.inputs["Color"].links[0].from_socket)
+                                node.id_data, node.inputs["Transmission"], translucent_node.inputs["Color"].links[0].from_socket)
 
                             node_tree.nodes.remove(translucent_node)
 
                         else:
-                            input_rgb = create_node(node, "ShaderNodeRGB", [
+                            input_rgb = create_node(node.id_data, "ShaderNodeRGB", [
                                 node.location[0] - 300, node.location[1]])
 
                             input_rgb.outputs["Color"].default_value = translucent_node.inputs["Color"].default_value
 
                             create_node_link(
-                                input_rgb, node.inputs["Transmission"], input_rgb.outputs["Color"])
+                                input_rgb.id_data, node.inputs["Transmission"], input_rgb.outputs["Color"])
 
                             node_tree.nodes.remove(translucent_node)

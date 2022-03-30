@@ -68,12 +68,12 @@ def ShaderNodeTexImage(old_node):
     if old_node.outputs["Alpha"].links:
 
         octane_alpha = create_node(
-            old_node, "ShaderNodeOctAlphaImageTex", [old_node.location[0], old_node.location[1] - (300 if old_node.outputs["Color"].links else 0)])
+            old_node.id_data, "ShaderNodeOctAlphaImageTex", [old_node.location[0], old_node.location[1] - (300 if old_node.outputs["Color"].links else 0)])
 
         octane_alpha.image = old_node.image
 
         for link in old_node.outputs["Alpha"].links:
-            create_node_link(octane_alpha, link.to_socket,
+            create_node_link(octane_alpha.id_data, link.to_socket,
                              octane_alpha.outputs[0])
 
     return old_node

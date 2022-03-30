@@ -239,7 +239,7 @@
   "ShaderNodeHueSaturation": {
     "inputs": {
       "Color": "Input",
-      "Hue": "Hue",
+      "Hue": "Brightness",
       "Saturation": "Saturation",
       "Value": "Gain"
     },
@@ -248,6 +248,50 @@
       "Color": "Texture out"
     },
 
+    "group_inputs": {
+      "Input": {
+        "node_type": "NodeSocketColor",
+        "default_value": false
+      },
+
+      "Brightness": {
+        "node_type": "NodeSocketFloatFactor",
+        "default_value": 1
+      },
+      "Gamma": {
+        "node_type": "NodeSocketFloatFactor",
+        "default_value": 0
+      },
+      "Contrast": {
+        "node_type": "NodeSocketFloatFactor",
+        "default_value": 0
+      },
+      "Exposure": {
+        "node_type": "NodeSocketFloatFactor",
+        "default_value": 0
+      },
+      "Mask": {
+        "node_type": "NodeSocketFloatFactor",
+        "default_value": 0
+      },
+      "Hue": {
+        "node_type": "NodeSocketFloatFactor",
+        "default_value": 0
+      },
+      "Saturation": {
+        "node_type": "NodeSocketFloatFactor",
+        "default_value": 0
+      },
+      "Gain": {
+        "node_type": "NodeSocketFloatFactor",
+        "default_value": 0
+      }
+    },
+    "group_outputs": {
+      "Texture out": "NodeSocketColor"
+    },
+
+    "use_custom_group": false,
     "octane_node": "OctaneColorCorrection"
   },
 
