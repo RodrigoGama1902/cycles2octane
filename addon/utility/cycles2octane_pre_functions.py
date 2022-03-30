@@ -1,13 +1,10 @@
 import bpy
 
+from .node_functions import create_node, create_node_link
+
 # Functions that will run before the replaced node were created
 
 # THESE FUNCTIONS SHOULD ALWAYS RETURN THE NODE
-
-
-def ShaderNodeBump(old_node):
-
-    return old_node
 
 
 def OctaneUniversalMaterial(old_node):
@@ -34,8 +31,6 @@ def ShaderNodeMapping(old_node):
     node_tree = old_node.id_data
 
     if old_node.inputs[0].links:
-
-        print(old_node.id_data)
 
         add_node = node_tree.nodes.new("ShaderNodeVectorMath")
         add_node.operation = "ADD"
@@ -64,5 +59,21 @@ def NULL_NODE_ShaderNodeBump(old_node):
     if bump_link:
         for i in bump_link:
             link(i.to_socket, old_node.outputs["Normal"])
+
+    return old_node
+
+
+def ShaderNodeTexImage(old_node):
+
+    if old_node.outputs["Alpha"].links:
+
+        octane_alpha = create_node(
+            old_node, "ShaderNodeOctAlphaImageTex", [old_node.location[0], old_node.location[1] - (300 if old_node.outputs["Color"].links else 0)])
+
+        octane_alpha.image = old_node.image
+
+        for link in old_node.outputs["Alpha"].links:
+            create_node_link(octane_alpha, link.to_socket,
+                             octane_alpha.outputs[0])
 
     return old_node

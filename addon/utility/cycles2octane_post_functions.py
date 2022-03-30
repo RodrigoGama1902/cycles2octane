@@ -21,6 +21,9 @@ def ShaderNodeTexImage(new_node, old_node):
 
     new_node.image = old_node.image
 
+    if old_node.bl_idname == "ShaderNodeOctAlphaImageTex":
+        move_node_link_to_socket(new_node.outputs[0], 1)
+
     return new_node
 
 
@@ -140,8 +143,6 @@ def OctaneUniversalMaterial(new_node, old_node):
     if new_node.inputs['Transmission'].links:
         new_node.inputs['Albedo'].default_value = (0, 0, 0)
 
-    print(old_node)
-
     if old_node.inputs.get('Transmission'):
         if not old_node.inputs['Transmission'].links:
             if not old_node.inputs['Transmission'].default_value == 0:
@@ -180,6 +181,11 @@ def OctaneRange(new_node, old_node):
 def ShaderNodeOctImageTex(new_node, old_node):
 
     new_node.image = old_node.image
+
+    if not new_node.outputs[0].links:
+        new_node.id_data.nodes.remove(new_node)
+
+        return
 
     return new_node
 

@@ -48,7 +48,7 @@
       "Color": "OutTex"
     },
 
-    "octane_node": "ShaderNodeOctImageTex"
+    "octane_node": ["ShaderNodeOctImageTex", "ShaderNodeOctAlphaImageTex"]
   },
 
   "ShaderNodeOutputMaterial": {
