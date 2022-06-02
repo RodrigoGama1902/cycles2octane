@@ -28,6 +28,10 @@ def OctaneUniversalMaterial(old_node):
 
 def ShaderNodeMapping(old_node):
 
+    return old_node
+
+    # Não sei pq fiz isso em baixo
+
     node_tree = old_node.id_data
 
     if old_node.inputs[0].links:

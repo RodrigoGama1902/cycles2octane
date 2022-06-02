@@ -112,6 +112,7 @@ class NodeReplacer:
         node_tree = node.id_data
 
         if null_node:
+
             new_node = create_null_node(
                 node, node_tree, null_node.null_links, null_node.group_inputs, null_node.group_outputs)
 
@@ -135,7 +136,7 @@ class NodeReplacer:
             self._replace_node_links(node, new_node,
                                      replace_node_data.replace_outputs, "OUTPUT")
 
-        new_node.name = node.bl_idname
+        #new_node.name = node.bl_idname
 
         return new_node
 

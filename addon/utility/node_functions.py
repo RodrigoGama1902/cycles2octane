@@ -97,19 +97,19 @@ def create_null_node(node: Node, node_tree, null_links, group_inputs, group_outp
 
     null_node_tree = group_tree
 
-    null_group = node_tree.nodes.new('ShaderNodeGroup')
-    null_group.node_tree = bpy.data.node_groups[null_node_tree.name]
-    null_group.name = "NULL_NODE_" + node.bl_idname
-    null_group.label = node.name
-    null_group.location = node.location
-    null_group.hide = True
+    null_group_node = node_tree.nodes.new('ShaderNodeGroup')
+    null_group_node.node_tree = bpy.data.node_groups[null_node_tree.name]
+    null_group_node.name = "NULL_NODE_" + node.bl_idname
+    null_group_node.label = node.name
+    null_group_node.location = node.location
+    null_group_node.hide = True
 
     link = null_node_tree.links.new
 
     for i in null_links:
         link(group_in.outputs[i], group_out.inputs[null_links[i]])
 
-    return null_group
+    return null_group_node
 
 
 def convert_old_to_new_socket_value(new_socket: NodeSocket, old_value: Any) -> Any:

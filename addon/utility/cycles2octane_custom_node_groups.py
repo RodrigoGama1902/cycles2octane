@@ -62,9 +62,6 @@ class NodeGroupsGenerator:
             default_value = group_inputs_data[i]["default_value"]
 
             if default_value:
-
-                print(default_value)
-
                 node_group_new_input.default_value = group_inputs_data[i]["default_value"]
 
         for i in group_outputs_data:
