@@ -2,7 +2,7 @@ bl_info = {
     "name": "Cycles2Octane Converter",
     "description": "Convert material nodes from cycles to octane",
     "author": "Rodrigo Gama",
-    "version": (0, 1, 5),
+    "version": (0, 1, 6),
     "blender": (3, 0, 1),
     "location": "View3D",
     "category": "3D View"}
