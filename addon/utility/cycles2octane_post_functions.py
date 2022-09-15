@@ -134,6 +134,18 @@ def ShaderNodeMapRange(new_node, old_node):
 
     return new_node
 
+
+def ShaderNodeOutputMaterial(new_node, old_node):
+
+    props = bpy.context.scene.cycles2octane
+
+    if props.convert_to == '0':
+        new_node.target = 'CYCLES'
+    if props.convert_to == '1':
+        new_node.target = 'octane'
+
+    return new_node
+
 # OCTANE NODES
 
 
@@ -305,6 +317,7 @@ def OctaneBinaryMathOperation(new_node: bpy.types.Node, old_node: bpy.types.Node
         new_node = unary_node
 
     return new_node
+
 
 # NULL NODES GROUP
 
