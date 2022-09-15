@@ -197,6 +197,11 @@ def ShaderNodeOctImageTex(new_node, old_node):
 
     new_node.image = old_node.image
 
+    if not new_node.image:
+        node_tree = new_node.id_data
+        node_tree.nodes.remove(new_node)
+        return None
+
     old_image_color_space = old_node.image.colorspace_settings
 
     if old_image_color_space.name == 'sRGB':
