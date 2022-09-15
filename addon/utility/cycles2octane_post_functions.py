@@ -156,6 +156,9 @@ def OctaneUniversalMaterial(new_node, old_node):
 
                 new_node.inputs['Albedo'].default_value = (0, 0, 0)
 
+    # Always turn 0 metallic property
+    new_node.inputs[6].default_value = 0
+
     return new_node
 
 

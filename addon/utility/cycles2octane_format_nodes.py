@@ -23,6 +23,7 @@ def ShaderNodeBsdfPrincipled(node: Node):
 
                     join_node = link.to_node
                     translucent_node = None
+                    principled_idx = 0
 
                     for idx, input in enumerate(join_node.inputs):
                         if input.links:
