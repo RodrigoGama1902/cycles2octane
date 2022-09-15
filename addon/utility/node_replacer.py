@@ -126,7 +126,7 @@ class NodeReplacer:
             else:
                 return
 
-        new_node.location = node.location
+        new_node.location = node.location  # type:ignore
 
         if replace_node_data.replace_inputs:
             self._replace_node_links(node, new_node,
@@ -189,7 +189,7 @@ class NodeReplacer:
         return replace_node_data
 
     @staticmethod
-    def _cycles_to_octane_node_data(node: Node, json_data: dict) -> tuple[ReplaceNodeData, NullNode]:
+    def _cycles_to_octane_node_data(node: Node, json_data: dict) -> tuple[ReplaceNodeData, NullNode, CustomNodeGroup]:
         '''Generate Replacement Node Data for Cycles to Octane conversion '''
 
         replace_node_data = ReplaceNodeData("", {}, {})
@@ -271,7 +271,7 @@ class NodeReplacer:
             return new_node
 
     @staticmethod
-    def _create_custom_node_group(node: Node) -> Node:
+    def _create_custom_node_group(node: Node):
 
         new_custom_node_group = CustomNodeGroupsGenerator(node)
 
@@ -281,9 +281,9 @@ class NodeReplacer:
                 new_custom_node_group, node.bl_idname, False)
 
             if custom_node_group_generator:
-                new_node = custom_node_group_generator()
+                new_node = custom_node_group_generator()  # type:ignore
 
-            return new_node
+            return new_node  # type:ignore
 
     @staticmethod
     def _replace_node_links(node: Node, new_node: Node, node_socket_data: dict, socket_type: str) -> None:
