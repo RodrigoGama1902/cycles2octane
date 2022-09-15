@@ -182,9 +182,16 @@ def ShaderNodeOctImageTex(new_node, old_node):
 
     new_node.image = old_node.image
 
+    old_image_color_space = old_node.image.colorspace_settings
+
+    if old_image_color_space.name == 'sRGB':
+        new_node.inputs['Gamma'].default_value = 2.2
+
+    if old_image_color_space.name == 'Non-Color':
+        new_node.inputs['Gamma'].default_value = 1
+
     if not new_node.outputs[0].links:
         new_node.id_data.nodes.remove(new_node)
-
         return
 
     return new_node
