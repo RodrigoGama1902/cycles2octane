@@ -13,7 +13,7 @@ def ShaderNodeBsdfPrincipled(node: Node):
     props = bpy.context.scene.cycles2octane
     node_tree = node.id_data
 
-    if props.convert_to == "1":
+    if props.convert_to == "OCTANE":
 
         # Detect Translucent Material Setup
 

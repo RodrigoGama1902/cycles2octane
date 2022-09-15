@@ -139,9 +139,9 @@ def ShaderNodeOutputMaterial(new_node, old_node):
 
     props = bpy.context.scene.cycles2octane
 
-    if props.convert_to == '0':
+    if props.convert_to == 'CYCLES':
         new_node.target = 'CYCLES'
-    if props.convert_to == '1':
+    if props.convert_to == 'OCTANE':
         new_node.target = 'octane'
 
     return new_node

@@ -80,12 +80,12 @@ class NodeReplacer:
         json_data = load_json()
 
         # Generate Octane To Cycles Node Data
-        if props.convert_to == '0':
+        if props.convert_to == 'CYCLES':
             replace_node_data = self._octane_to_cycles_node_data(
                 node, json_data)
 
         # Generate Cycles To Octane Node Data
-        if props.convert_to == '1':
+        if props.convert_to == 'OCTANE':
             replace_node_data, null_node, custom_node_group = self._cycles_to_octane_node_data(
                 node, json_data)
 

@@ -1,3 +1,5 @@
+# type:ignore
+
 import bpy
 
 from bpy.props import (IntProperty,
@@ -17,10 +19,10 @@ class COC_AddonMainProps(PropertyGroup):
 
     convert_to: EnumProperty(
         name='Convert To',
-        default='1',
+        default='OCTANE',
         items=[
-            ('0', 'Cycles', ''),
-            ('1', 'Octane', ''),
+            ('CYCLES', 'Cycles', ''),
+            ('OCTANE', 'Octane', ''),
         ]
     )
 
