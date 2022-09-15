@@ -28,10 +28,10 @@ class COC_AddonMainProps(PropertyGroup):
 
     select_method: EnumProperty(
         name='Convert',
-        default='0',
+        default='ACTIVE_MATERIAL',
         items=[
-            ('0', 'Active Material', ''),
-            ('1', 'Active Object', ''),
-            ('2', 'Selected Objects', ''),
+            ('ACTIVE_MATERIAL', 'Active Material', ''),
+            ('ACTIVE_OBJECT', 'Active Object', ''),
+            ('SELECTED_OBJECTS', 'Selected Objects', ''),
         ]
     )

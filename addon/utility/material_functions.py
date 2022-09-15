@@ -11,17 +11,17 @@ def get_materials_selected() -> list[Material]:
 
     mat_data = []
 
-    if props.select_method == "0":
+    if props.select_method == "ACTIVE_MATERIAL":
         if bpy.context.active_object:
             if bpy.context.active_object.active_material:
                 mat_data.append(bpy.context.active_object.active_material)
 
-    if props.select_method == "1":
+    if props.select_method == "ACTIVE_OBJECT":
         if bpy.context.active_object:
             if bpy.context.active_object.data.materials:
                 mat_data = bpy.context.active_object.data.materials
 
-    if props.select_method == "2":
+    if props.select_method == "SELECTED_OBJECTS":
 
         mat_data = []
 
