@@ -68,7 +68,7 @@ class NodeReplacer:
 
     new_node: Node
 
-    def __init__(self, node: Node):
+    def __init__(self, original_node: Node):
 
         self.new_node = None
 
@@ -82,29 +82,31 @@ class NodeReplacer:
         # Generate Octane To Cycles Node Data
         if props.convert_to == 'CYCLES':
             replace_node_data = self._octane_to_cycles_node_data(
-                node, json_data)
+                original_node, json_data)
 
         # Generate Cycles To Octane Node Data
         if props.convert_to == 'OCTANE':
             replace_node_data, null_node, custom_node_group = self._cycles_to_octane_node_data(
-                node, json_data)
+                original_node, json_data)
 
         # Starting Replacement
         if replace_node_data:
 
             # Running Pre Node Function
-            node = self._run_node_pre_function(node)
+            original_node = self._run_node_pre_function(original_node)
 
             new_node = self._replace_node(
-                node, null_node, custom_node_group, replace_node_data)
+                original_node, null_node, custom_node_group, replace_node_data)
 
             if new_node:
 
+                new_node.width = original_node.width  # keep the same width
+
                 new_node = self._run_node_post_function(
-                    node, new_node, null_node)
+                    original_node, new_node, null_node)
 
                 self.new_node = new_node
-                node.id_data.nodes.remove(node)
+                original_node.id_data.nodes.remove(original_node)
 
     def _replace_node(self, node: Node, null_node: NullNode, custom_node_group: CustomNodeGroup, replace_node_data: ReplaceNodeData) -> Node:
         '''Execute the replace process using the ReplaceNodeData and NullNode data when exists '''
