@@ -63,6 +63,7 @@ class COC_OP_ConvertNodes(bpy.types.Operator):
         self.ignore_nodes.clear()
 
     def _format_node_tree(self, node_tree: ShaderNodeTree) -> None:
+        '''Readjust the old node tree to be compatible with the new node tree'''
 
         remove_reroute_node_from_node_tree(node_tree)
 
@@ -86,11 +87,62 @@ class COC_OP_ConvertNodes(bpy.types.Operator):
                     if node_format:
                         node_format(node)
 
+    def _remove_unlinked_nodes(self, node_tree: ShaderNodeTree) -> None:
+
+        for node in node_tree.nodes:
+            unused_node = False
+
+            for outp in node.outputs:
+                if outp.links:
+                    unused_node = True
+                    break
+
+            if node.type == 'OUTPUT_MATERIAL':  # Material output does not have output
+                for inp in node.inputs:
+                    if inp.links:
+                        unused_node = True
+                        break
+
+            if not unused_node:
+                node_tree.nodes.remove(node)
+
+    def _join_mapping_nodes(self, node_tree):
+        '''Join mapping nodes links to remove extra mapping nodes with same values'''
+
+        mapping_nodes = [n for n in node_tree.nodes if n.type == 'MAPPING']
+        mapping_patterns = []
+
+        node_inputs = ["Location", "Rotation", "Scale"]
+
+        for mapping_node in mapping_nodes:
+            new_pattern = True
+
+            if not mapping_patterns:
+                mapping_patterns.append(mapping_node)
+
+            else:
+                for n in mapping_patterns:
+                    same_parameters = True
+
+                    for inp in node_inputs:
+                        if n.inputs[inp].default_value != mapping_node.inputs[inp].default_value:
+                            same_parameters = False
+
+                    if same_parameters:
+                        new_pattern = False
+                        break
+
+                if new_pattern:
+                    mapping_patterns.append(mapping_node)
+
+            print(new_pattern)
+
     def execute(self, context):
 
         mat_data = get_materials_selected()
         for mat in mat_data:
             if mat:
                 self._convert_node_tree(mat.node_tree)
+                self._remove_unlinked_nodes(mat.node_tree)
 
         return {'FINISHED'}
