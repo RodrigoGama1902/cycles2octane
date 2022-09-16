@@ -48,11 +48,6 @@ class COC_OP_ConvertNodes(bpy.types.Operator):
         self._format_node_tree(node_tree)
 
         for node in node_tree.nodes:
-
-            if node.type == "FRAME":
-                node_tree.nodes.remove(node)
-                continue
-
             if node.type == "GROUP" and not node.name.startswith("NULL_NODE_"):
                 self._convert_node_tree(node.node_tree)
             else:
@@ -112,36 +107,48 @@ class COC_OP_ConvertNodes(bpy.types.Operator):
         mapping_nodes = [n for n in node_tree.nodes if n.type == 'MAPPING']
         mapping_patterns = []
 
-        node_inputs = ["Location", "Rotation", "Scale"]
-
         for mapping_node in mapping_nodes:
-            new_pattern = True
-
             if not mapping_patterns:
                 mapping_patterns.append(mapping_node)
+                continue
 
+            new_pattern = True
+            node_inputs_parameters = ["Location", "Rotation", "Scale"]
+
+            same_node = None
+
+            for n in mapping_patterns:
+
+                same_input_parameters = True
+                for inp in node_inputs_parameters:
+                    if n.inputs[inp].default_value != mapping_node.inputs[inp].default_value:
+                        same_input_parameters = False
+
+                if same_input_parameters:
+                    new_pattern = False
+                    same_node = n
+                    break
+
+            if new_pattern:
+                mapping_patterns.append(mapping_node)
+                continue
             else:
-                for n in mapping_patterns:
-                    same_parameters = True
+                for out_link in mapping_node.outputs[0].links:
+                    node_tree.links.new(
+                        same_node.outputs[0], out_link.to_socket)  # type:ignore
 
-                    for inp in node_inputs:
-                        if n.inputs[inp].default_value != mapping_node.inputs[inp].default_value:
-                            same_parameters = False
-
-                    if same_parameters:
-                        new_pattern = False
-                        break
-
-                if new_pattern:
-                    mapping_patterns.append(mapping_node)
-
-            print(new_pattern)
+    def _remove_frame_nodes(self, node_tree: ShaderNodeTree) -> None:
+        for node in node_tree.nodes:
+            if node.type == "FRAME":
+                node_tree.nodes.remove(node)
 
     def execute(self, context):
 
         mat_data = get_materials_selected()
         for mat in mat_data:
             if mat:
+                self._remove_frame_nodes(mat.node_tree)
+                self._join_mapping_nodes(mat.node_tree)
                 self._convert_node_tree(mat.node_tree)
                 self._remove_unlinked_nodes(mat.node_tree)
 
