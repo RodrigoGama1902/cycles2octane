@@ -1,3 +1,0 @@
-[BUF FIX] Botão de conversão não aparecia pois no modo "2" de seleção, levantava error quando tinha selecionado objetos que não tinham material data
-
-[ADDED] Adicionado na função pos de universal material, que detecta quando o transmission foi alterado, deixando o albedo totalmente black
