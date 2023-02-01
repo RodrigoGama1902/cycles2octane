@@ -7,6 +7,7 @@ classes = (
     COC_OP_ConvertNodes,
 )
 
+# create a panel in the scene context 
 
 def register_operators():
     from bpy.utils import register_class
