@@ -90,23 +90,25 @@ class NodeReplacer:
                 original_node, json_data)
 
         # Starting Replacement
-        if replace_node_data:
+        if not replace_node_data:
+            return None
 
-            # Running Pre Node Function
-            original_node = self._run_node_pre_function(original_node)
+        # Running Pre Node Function
+        original_node = self._run_node_pre_function(original_node)
 
-            new_node = self._replace_node(
-                original_node, null_node, custom_node_group, replace_node_data)
+        new_node = self._replace_node(
+            original_node, null_node, custom_node_group, replace_node_data)
 
-            if new_node:
+        if not new_node:
+            return None
 
-                new_node.width = original_node.width  # keep the same width
+        new_node.width = original_node.width  # keep the same width
 
-                new_node = self._run_node_post_function(
-                    original_node, new_node, null_node)
+        new_node = self._run_node_post_function(
+            original_node, new_node, null_node)
 
-                self.new_node = new_node
-                original_node.id_data.nodes.remove(original_node)
+        self.new_node = new_node
+        original_node.id_data.nodes.remove(original_node)
 
     def _replace_node(self, node: Node, null_node: NullNode, custom_node_group: CustomNodeGroup, replace_node_data: ReplaceNodeData) -> Node:
         '''Execute the replace process using the ReplaceNodeData and NullNode data when exists '''
