@@ -31,6 +31,31 @@ Convert Cycles Materials to Octane Materials in Blender with a single click.
 
 ![Panel](img/panel.webp)
 
+# Supported Cycles Material Nodes
+
+| Cycles Node               | Octane Node                                   |
+|---------------------------|-----------------------------------------------|
+| ShaderNodeBsdfTranslucent | OctaneUniversalMaterial                       |
+| ShaderNodeBsdfPrincipled  | OctaneUniversalMaterial                       |
+| ShaderNodeTexImage        | ShaderNodeOctImageTex \| ShaderNodeOctAlphaImageTex |
+| ShaderNodeOutputMaterial  | ShaderNodeOutputMaterial                      |
+| ShaderNodeInvert          | OctaneInvertTexture                           |
+| ShaderNodeMapping         | Octane3DTransformation                        |
+| ShaderNodeVertexColor     | OctaneColorVertexAttribute                    |
+| ShaderNodeMixRGB          | OctaneMixTexture \| OctaneAddTexture \| OctaneMultiplyTexture \| OctaneSubtractTexture |
+| ShaderNodeMath            | OctaneBinaryMathOperation \| OctaneUnaryMathOperation |
+| ShaderNodeBsdfTransparent | OctaneNullMaterial                            |
+| ShaderNodeAddShader       | OctaneMixMaterial                             |
+| ShaderNodeMixShader       | OctaneMixMaterial                             |
+| ShaderNodeBsdfDiffuse     | OctaneDiffuseMaterial                         |
+| ShaderNodeBump            | None                                          |
+| ShaderNodeNormalMap       | None                                          |
+| ShaderNodeHueSaturation   | OctaneColorCorrection                         |
+| ShaderNodeBrightContrast  | OctaneColorCorrection                         |
+| ShaderNodeRGB             | OctaneRGBColor                                |
+| ShaderNodeMapRange        | OctaneRange                                   |
+
+
 ## License
 
 This project is licensed under the GPL v3 License - see the [LICENSE](LICENSE) file for details.
