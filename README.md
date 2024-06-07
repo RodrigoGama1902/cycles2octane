@@ -2,6 +2,7 @@
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![Blender](https://img.shields.io/badge/Blender-3.3-orange.svg)](https://www.blender.org/download/releases/3-3/)
+[![Octane](https://img.shields.io/badge/Octane-26.5-red.svg)](https://render.otoy.com/forum/viewtopic.php?f=113&t=80550/)
 
 ## Overview
 
